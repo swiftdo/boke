@@ -35,6 +35,11 @@ final class User: Model, Content {
     @Children(for: \.$user)
     var userAuths: [UserAuth]
 
+    @Children(for: \.$author)
+    var topics: [Topic]
+
+
+
     init() { }
 
     init(id: UUID? = nil, name: String, email: String, isEmailVerified: Bool = false, avatar: String? = nil) {

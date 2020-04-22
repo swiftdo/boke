@@ -8,9 +8,9 @@
 import Fluent
 import Vapor
 
-final class Tag: Content, Model {
+final class Subject: Content, Model {
 
-    static let schema = "tags"
+    static let schema = "subjects"
 
     @ID(key: .id)
     var id: UUID?
@@ -21,7 +21,7 @@ final class Tag: Content, Model {
     @OptionalField(key: "remarks")
     var remarks: String?
 
-    @Siblings(through: TopicTag.self, from: \.$tag, to: \.$topic)
+    @Children(for: \.$subject)
     var topics: [Topic]
 
     @Timestamp(key: "created_at", on: .create)

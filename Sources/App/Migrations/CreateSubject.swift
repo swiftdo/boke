@@ -7,18 +7,17 @@
 
 import Fluent
 
-struct CreateTag: Migration {
+struct CreateSubject: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
-        return database.schema(Tag.schema)
+        return database.schema(Subject.schema)
             .id()
             .field("name", .string, .required)
             .field("remarks", .string)
-            
             .field("created_at", .datetime)
             .create()
     }
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
-        return database.schema(Tag.schema).delete()
+        return database.schema(Subject.schema).delete()
     }
 }
