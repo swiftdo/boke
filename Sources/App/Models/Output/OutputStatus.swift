@@ -31,4 +31,7 @@ extension OutputStatus {
     static var accessTokenNotExist = OutputStatus(code: 24, message: "access_token不存在")
     static var refreshTokenNotExist = OutputStatus(code: 25, message: "refresh_token不存在")
     static var invalidEmailOrPassword = OutputStatus(code: 26, message: "邮箱或密码错误")
+    static var subjectExist = OutputStatus(code: 27, message: "subject已经存在")
+    static var subjectNotExist = OutputStatus(code: 28, message: "subject不存在")
+    static var missParameters = OutputStatus(code: 29, message: "参数不完整")
 }

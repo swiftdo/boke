@@ -13,4 +13,11 @@ func migrations(_ app: Application) throws {
     app.migrations.add(CreateRefreshToken())
     app.migrations.add(CreateEmailToken())
     app.migrations.add(CreateAccessToken())
+    app.migrations.add(CreateSubject())
+    app.migrations.add(CreateTopic())
+    app.migrations.add(CreateTag())
+    app.migrations.add(CreateCatalog())
+    app.migrations.add(CreateTopicTag())
+
+    try app.autoMigrate().wait()
 }

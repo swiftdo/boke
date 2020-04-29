@@ -34,7 +34,7 @@ struct AuthController: RouteCollection {
 }
 
 extension AuthController {
-    private func register(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+    private func register(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputCreate>> {
         try InputRegister.validate(req)
         let inputRegister = try req.content.decode(InputRegister.self)
 
@@ -50,8 +50,8 @@ extension AuthController {
                 return try UserAuth(userId: user.requireID(), authType: .email, identifier: inputRegister.email, credential: pwd)
             }
             .flatMap { userAuth in
-                return userAuth.create(on: req.db).map { userAuth }
-            }.transform(to: .created)
+                return userAuth.create(on: req.db).map { _ in OutputJson(success: OutputCreate())}
+            }
 
             //TODO: send email need
 

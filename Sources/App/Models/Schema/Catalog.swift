@@ -21,6 +21,12 @@ final class Catalog: Content, Model {
     @Field(key: "title")
     var title: String
 
+    @OptionalField(key: "cover")
+    var cover: String? // 手册的封面
+
+    @OptionalField(key: "remarks")
+    var remarks: String? // 手册的描述
+
     @OptionalField(key: "path")
     var path: String? // 表示父的 id 列表
 

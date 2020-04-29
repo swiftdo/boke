@@ -31,7 +31,10 @@ final class Topic: Content, Model {
     var tags: [Tag]
 
     @Field(key: "content")
-    var content: String
+    var content: String // 可能是文章，可能是 html， 可能是视屏
+
+    @OptionalField(key: "remarks")
+    var remarks: String? // 文章说明
 
     @Enum(key: "content_type")
     var contentType: ContentType

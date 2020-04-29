@@ -13,6 +13,7 @@ struct CreateSubject: Migration {
             .id()
             .field("name", .string, .required)
             .field("remarks", .string)
+            .field("cover", .string)
             .field("created_at", .datetime)
             .create()
     }

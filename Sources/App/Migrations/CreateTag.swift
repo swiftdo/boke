@@ -13,7 +13,6 @@ struct CreateTag: Migration {
             .id()
             .field("name", .string, .required)
             .field("remarks", .string)
-            
             .field("created_at", .datetime)
             .create()
     }

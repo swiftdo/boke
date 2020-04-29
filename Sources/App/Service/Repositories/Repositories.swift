@@ -28,11 +28,15 @@ extension Application {
             static var database: Self {
                 /// 初始化 Provider
                 return .init {
+                    /// 初始化属性
                     $0.repositories.use { DatabaseRepositoryUser(database: $0.db) }
                     $0.repositories.use { DatabaseRepositoryEmailToken(database: $0.db) }
                     $0.repositories.use { DatabaseRepositoryRefreshToken(database: $0.db) }
                     $0.repositories.use { DatabaseRepositoryAccessToken(database: $0.db) }
                     $0.repositories.use { DatabaseRepositoryUserAuth(database: $0.db) }
+                    $0.repositories.use { DatabaseRepositorySubject(database: $0.db) }
+                    $0.repositories.use { DatabaseRepositoryTag(database: $0.db) }
+                    $0.repositories.use { DatabaseRepositoryTopic(database: $0.db) }
                 }
             }
 
@@ -46,6 +50,10 @@ extension Application {
             var makeEmailTokenRepository: ((Application) -> RepositoryEmailToken)?
             var makeRefreshTokenRepository: ((Application) -> RepositoryRefreshToken)?
             var makeAccessTokenRepository: ((Application) -> RepositoryAccessToken)?
+            var makeSubjectRepository: ((Application) -> RepositorySubject)?
+            var makeTagRepository: ((Application) -> RepositoryTag)?
+            var makeTopicRepository: ((Application) -> RepositoryTopic)?
+
             init() { }
         }
 

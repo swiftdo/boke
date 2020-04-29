@@ -18,6 +18,9 @@ final class Subject: Content, Model {
     @Field(key: "name")
     var name: String
 
+    @OptionalField(key: "cover")
+    var cover: String?
+
     @OptionalField(key: "remarks")
     var remarks: String?
 
@@ -29,9 +32,10 @@ final class Subject: Content, Model {
 
     init(){ }
 
-    init(name: String, remarks: String?) {
+    init(name: String, remarks: String?, cover: String?) {
         self.name = name
         self.remarks = remarks
+        self.cover = cover
     }
 
 }

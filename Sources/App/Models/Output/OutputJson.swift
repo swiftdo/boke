@@ -5,7 +5,7 @@
 //  Created by laijihua on 2020/4/18.
 //
 
-import Foundation
+import Vapor
 
 struct OutputJson<T: Output>: Output, OutputCodeMsg {
     var code: Int

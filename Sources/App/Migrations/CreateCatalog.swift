@@ -14,6 +14,8 @@ struct CreateCatalog: Migration {
             .field("pid", .uuid)
             .field("title", .string, .required)
             .field("path", .string)
+            .field("cover", .string)
+            .field("remarks", .string)
             .field("level", .int, .required)
             .field("order", .int, .required)
             .field("topic_id", .uuid)
