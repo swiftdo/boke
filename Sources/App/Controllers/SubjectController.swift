@@ -20,14 +20,14 @@ struct SubjectController: RouteCollection {
 }
 
 extension SubjectController {
-    private func add(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputCreate>> {
+    private func add(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputSubject>> {
         let inputSubject = try req.content.decode(InputSubject.self)
         return req.repositorySubjects
             .find(name: inputSubject.name)
             .guard({ $0 == nil }, else: ApiError(code: .subjectExist))
             .transform(to: Subject(name: inputSubject.name, remarks: inputSubject.remarks, cover: inputSubject.cover))
             .flatMap { subject in
-                return req.repositorySubjects.create(subject).map { _ in OutputJson(success: OutputCreate())}
+                return req.repositorySubjects.create(subject).map { _ in OutputJson(success: OutputSubject(subject: subject))}
             }
     }
 

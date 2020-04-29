@@ -5,14 +5,13 @@
 //  Created by laijihua on 2020/4/28.
 //
 
-import Foundation
-
-
 import Vapor
 import Fluent
 
 protocol RepositoryTag: Repository {
     func create(_ tag: Tag) -> EventLoopFuture<Void>
+    func find(name: String) -> EventLoopFuture<Tag?>
+    func find(_ id: UUID?) -> EventLoopFuture<Tag?>
 }
 
 struct DatabaseRepositoryTag: RepositoryTag, DatabaseRepository {
@@ -20,6 +19,14 @@ struct DatabaseRepositoryTag: RepositoryTag, DatabaseRepository {
 
     func create(_ tag: Tag) -> EventLoopFuture<Void> {
         return tag.create(on: database)
+    }
+
+    func find(name: String) -> EventLoopFuture<Tag?> {
+        return Tag.query(on: database).filter(\.$name == name).first()
+    }
+
+    func find(_ id: UUID?) -> EventLoopFuture<Tag?> {
+        return Tag.find(id, on: database)
     }
 }
 

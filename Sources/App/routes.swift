@@ -27,5 +27,7 @@ func routes(_ app: Application) throws {
     try app.group("api") { api in
         try api.register(collection: AuthController())
         try api.register(collection: SubjectController())
+        try api.register(collection: TagController())
+        try api.register(collection: TopicController())
     }
 }

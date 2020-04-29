@@ -10,6 +10,7 @@ import Fluent
 
 protocol RepositoryTopic: Repository {
     func create(_ topic: Topic) -> EventLoopFuture<Void>
+    func find(_ id: UUID) -> EventLoopFuture<Topic?>
 }
 
 struct DatabaseRepositoryTopic: RepositoryTopic, DatabaseRepository {
@@ -17,6 +18,15 @@ struct DatabaseRepositoryTopic: RepositoryTopic, DatabaseRepository {
 
     func create(_ topic: Topic) -> EventLoopFuture<Void> {
         return topic.create(on: database)
+    }
+
+    func find(_ id: UUID) -> EventLoopFuture<Topic?> {
+        return Topic.query(on: database)
+            .with(\.$author)
+            .with(\.$subject)
+            .with(\.$tags)
+            .filter(\.$id == id)
+            .first()
     }
 }
 
