@@ -37,6 +37,8 @@ extension Application {
                     $0.repositories.use { DatabaseRepositorySubject(database: $0.db) }
                     $0.repositories.use { DatabaseRepositoryTag(database: $0.db) }
                     $0.repositories.use { DatabaseRepositoryTopic(database: $0.db) }
+                    $0.repositories.use { DatabaseRepositoryCatalog(database: $0.db) }
+                    $0.repositories.use { DatabaseRepositoryBooklet(database: $0.db)}
                 }
             }
 
@@ -53,6 +55,8 @@ extension Application {
             var makeSubjectRepository: ((Application) -> RepositorySubject)?
             var makeTagRepository: ((Application) -> RepositoryTag)?
             var makeTopicRepository: ((Application) -> RepositoryTopic)?
+            var makeCatalogRepository: ((Application) -> RepositoryCatalog)?
+            var makeBookletRepository: ((Application) -> RepositoryBooklet)?
 
             init() { }
         }

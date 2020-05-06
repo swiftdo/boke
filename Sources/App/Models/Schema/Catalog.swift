@@ -8,6 +8,7 @@
 import Fluent
 import Vapor
 
+/// 目录
 final class Catalog: Content, Model {
 
     static let schema = "catalogs"
@@ -22,10 +23,10 @@ final class Catalog: Content, Model {
     var title: String
 
     @OptionalField(key: "cover")
-    var cover: String? // 手册的封面
+    var cover: String?
 
     @OptionalField(key: "remarks")
-    var remarks: String? // 手册的描述
+    var remarks: String?
 
     @OptionalField(key: "path")
     var path: String? // 表示父的 id 列表

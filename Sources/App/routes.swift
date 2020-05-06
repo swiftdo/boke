@@ -29,5 +29,6 @@ func routes(_ app: Application) throws {
         try api.register(collection: SubjectController())
         try api.register(collection: TagController())
         try api.register(collection: TopicController())
+        try api.register(collection: BookletController())
     }
 }

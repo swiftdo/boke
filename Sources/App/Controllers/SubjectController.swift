@@ -15,6 +15,7 @@ struct SubjectController: RouteCollection {
             let authGroup = subject.grouped(AccessToken.authenticator(), User.guardMiddleware())
             authGroup.post("add", use: add)
             subject.get(":id", "topics", use: getTopics)
+            subject.get("all", use: getChannel)
         }
     }
 }
@@ -29,6 +30,15 @@ extension SubjectController {
             .flatMap { subject in
                 return req.repositorySubjects.create(subject).map { _ in OutputJson(success: OutputSubject(subject: subject))}
             }
+    }
+
+    private func getChannel(_ req: Request) throws -> EventLoopFuture<OutputJson<[OutputSubject]>> {
+        return req.repositorySubjects
+            .all()
+            .map {
+                $0.map { OutputSubject(subject: $0) }
+            }.map { OutputJson(success: $0)}
+
     }
 
     private func getTopics(_ req: Request) throws -> EventLoopFuture<OutputJson<Page<OutputTopic>>> {

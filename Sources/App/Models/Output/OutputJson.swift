@@ -30,3 +30,7 @@ struct OutputJson<T: Output>: Output, OutputCodeMsg {
 extension String: Output {
     
 }
+
+extension Array: Output where Element: Output {
+
+}

@@ -17,4 +17,6 @@ extension Request {
     var repositorySubjects: RepositorySubject { application.repositories.subjects.for(self) }
     var repositoryTags: RepositoryTag { application.repositories.tags.for(self) }
     var repositoryTopics: RepositoryTopic { application.repositories.topics.for(self) }
+    var repositoryCatalogs: RepositoryCatalog { application.repositories.catalogs.for(self) }
+    var repositoryBooklets: RepositoryBooklet { application.repositories.booklets.for(self) }
 }

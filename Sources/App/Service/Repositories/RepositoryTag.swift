@@ -12,6 +12,7 @@ protocol RepositoryTag: Repository {
     func create(_ tag: Tag) -> EventLoopFuture<Void>
     func find(name: String) -> EventLoopFuture<Tag?>
     func find(_ id: UUID?) -> EventLoopFuture<Tag?>
+    func all() -> EventLoopFuture<[Tag]>
 }
 
 struct DatabaseRepositoryTag: RepositoryTag, DatabaseRepository {
@@ -27,6 +28,10 @@ struct DatabaseRepositoryTag: RepositoryTag, DatabaseRepository {
 
     func find(_ id: UUID?) -> EventLoopFuture<Tag?> {
         return Tag.find(id, on: database)
+    }
+
+    func all() -> EventLoopFuture<[Tag]> {
+        return Tag.query(on: database).all()
     }
 }
 

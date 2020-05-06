@@ -18,6 +18,7 @@ func migrations(_ app: Application) throws {
     app.migrations.add(CreateTag())
     app.migrations.add(CreateCatalog())
     app.migrations.add(CreateTopicTag())
+    app.migrations.add(CreateBooklet())
 
     try app.autoMigrate().wait()
 }

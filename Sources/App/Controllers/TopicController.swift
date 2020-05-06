@@ -14,11 +14,23 @@ struct TopicController: RouteCollection {
         routes.group("topic") { topic in
             let authGroup = topic.grouped(AccessToken.authenticator(), User.guardMiddleware())
             authGroup.post("add", use: add)
+            topic.get(":id", use: detail)
         }
     }
 }
 
 extension TopicController {
+    private func detail(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputTopic>> {
+        guard let idStr = req.parameters.get("id", as: String.self), let id = UUID(uuidString: idStr) else {
+            throw ApiError(code: OutputStatus.missParameters)
+        }
+        return req.repositoryTopics
+            .find(id)
+            .unwrap(or: ApiError(code: OutputStatus.topicNotExist))
+            .map{ OutputJson(success: OutputTopic(topic: $0))}
+    }
+
+
     private func add(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputTopic>> {
         let user = try req.auth.require(User.self)
         let inputTopic = try req.content.decode(InputTopic.self)
