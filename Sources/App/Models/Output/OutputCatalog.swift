@@ -21,7 +21,7 @@ struct OutputCatalog: Output {
 
     init(catalog: Catalog, child: [OutputCatalog] = []) {
         self.id = catalog.id
-        self.pid = catalog.parentCatalog?.id
+        self.pid = catalog.$parentCatalog.id
         self.title = catalog.title
         self.path = catalog.path
         self.level = catalog.level

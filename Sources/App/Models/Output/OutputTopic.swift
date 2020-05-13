@@ -16,7 +16,9 @@ struct OutputTopic: Output {
     let tags: [OutputTag]
     let contentType: Topic.ContentType
     let weight: Int
-    let createdAt: Date?
+    let createdAt: TimeInterval?
+    let remarks: String?
+    let content: String
 
     init(topic: Topic) {
         self.id = topic.id
@@ -27,7 +29,9 @@ struct OutputTopic: Output {
         self.tags = topic.tags.map { OutputTag(tag: $0)}
         self.contentType = topic.contentType
         self.weight = topic.weight
-        self.createdAt = topic.createdAt
+        self.remarks = topic.remarks
+        self.createdAt = topic.createdAt?.timeIntervalSince1970
+        self.content = topic.content
     }
 
 }

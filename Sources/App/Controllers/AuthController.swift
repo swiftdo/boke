@@ -14,7 +14,6 @@ struct AuthController: RouteCollection {
         routes.group("auth") { auth in
             auth.post("register", use: register)
             auth.post("login", use: login)
-
 //            auth.group("email", "verification") { emailVerificationRoutes in
 //                emailVerificationRoutes.post("", use: sendEmailVerification)
 //                emailVerificationRoutes.get("", use: verifyEmail)
@@ -24,7 +23,6 @@ struct AuthController: RouteCollection {
 //                resetPasswordRoutes.post("", use: resetPassword)
 //                resetPasswordRoutes.get("verify", use: verifyResetPasswordToken)
 //            }
-//
 //            auth.post("recover", use: recoverAccount)
             auth.post("accessToken", use: refreshAccessToken)
 

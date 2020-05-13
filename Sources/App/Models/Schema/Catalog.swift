@@ -53,13 +53,14 @@ final class Catalog: Content, Model {
 
     }
 
-    init(pid: UUID? = nil, title: String, path: String? = nil, level: Int, order: Int, topicId: UUID? = nil) {
-        self.parentCatalog?.id = pid
+    init(pid: UUID? = nil, title: String, remarks: String? = nil,  path: String? = nil, level: Int = 1, order: Int = 0, topicId: UUID? = nil) {
+        self.$parentCatalog.id = pid
         self.title = title
         self.path = path
         self.level = level
         self.order = order
         self.topicId = topicId
+        self.remarks = nil
     }
 
 }

@@ -16,12 +16,13 @@ struct OutputBooklet: Output {
     let author: OutputUser
     let catalogId: UUID
 
-    init(booklet: Booklet) {
+    init(booklet: Booklet, author: User? = nil) {
         self.id = booklet.id
         self.name = booklet.name
         self.cover = booklet.cover
         self.remarks = booklet.remarks
-        self.author = OutputUser(from: booklet.author)
+        self.author = OutputUser(from: author ?? booklet.author)
         self.catalogId = booklet.catalogId
     }
+
 }

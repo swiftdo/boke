@@ -52,6 +52,7 @@ extension SubjectController {
             .flatMap { subject in
                 return subject.$topics
                     .query(on: req.db)
+                    .sort(\.$createdAt, .descending)
                     .with(\.$subject)
                     .with(\.$author)
                     .with(\.$tags)

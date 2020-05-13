@@ -37,4 +37,5 @@ extension OutputStatus {
     static var tagNotExist = OutputStatus(code: 30, message: "tag不存在")
     static var topicNotExist = OutputStatus(code: 31, message: "topic不存在")
     static var catalogNotExist = OutputStatus(code: 32, message: "catalog不存在")
+    static var bookletNotExist = OutputStatus(code: 33, message: "booklet不存在")
 }

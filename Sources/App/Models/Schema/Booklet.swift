@@ -44,14 +44,13 @@ final class Booklet: Content, Model {
 
     }
 
-    init(id: UUID? = nil, name: String, cover: String? = nil, remarks:String? = nil, userId: UUID, catalogId: UUID) {
+    init(id: UUID? = nil, name: String, userId: UUID, catalogId: UUID, cover: String? = nil, remarks: String? = nil ) {
         self.id = id
         self.name = name
         self.cover = cover
         self.remarks = remarks
         self.$author.id = userId
         self.catalogId = catalogId
-
     }
 
 }
