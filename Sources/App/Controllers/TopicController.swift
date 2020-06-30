@@ -14,7 +14,10 @@ struct TopicController: RouteCollection {
         routes.group("topic") { topic in
             let authGroup = topic.grouped(AccessToken.authenticator(), User.guardMiddleware())
             authGroup.post("add", use: add)
+            authGroup.post("delete", ":id", use: delete)
             topic.get(":id", use: detail)
+            topic.get("all", use: all)
+
         }
     }
 }
@@ -28,6 +31,27 @@ extension TopicController {
             .find(id)
             .unwrap(or: ApiError(code: OutputStatus.topicNotExist))
             .map{ OutputJson(success: OutputTopic(topic: $0))}
+    }
+
+    private func all(_ req: Request) throws -> EventLoopFuture<OutputJson<Page<OutputTopic>>> {
+        return Topic.query(on: req.db)
+            .sort(\.$createdAt, .descending)
+            .with(\.$subject)
+            .with(\.$author)
+            .with(\.$tags)
+            .paginate(for: req)
+            .map { page in
+                return page.map{ OutputTopic(topic: $0) }
+            }.map {
+                return OutputJson(success: $0)
+            }
+    }
+
+    private func delete(_ req: Request) throws -> EventLoopFuture<OutputJson<String>> {
+        guard let idStr = req.parameters.get("id", as: String.self), let id = UUID(uuidString: idStr) else {
+            throw ApiError(code: OutputStatus.missParameters)
+        }
+        return req.repositoryTopics.delete(id).transform(to: OutputJson(success: "成功删除"))
     }
 
 
@@ -75,6 +99,5 @@ extension TopicController {
                 .unwrap(or: ApiError(code: .topicNotExist))
                 .map{ OutputJson(success: OutputTopic(topic: $0))}
         }
-
     }
 }

@@ -13,6 +13,7 @@ struct TagController: RouteCollection {
         routes.group("tag") { tag in
             let authGroup = tag.grouped(AccessToken.authenticator(), User.guardMiddleware())
             authGroup.post("add", use: add)
+            authGroup.post("delete", ":id", use: delete)
 
             tag.get("all", use: all)
             tag.get(":id", "topics", use: getTopics)
@@ -57,5 +58,12 @@ extension TagController {
             .flatMap { tag in
                 return req.repositoryTags.create(tag).map { _ in OutputJson(success: OutputTag(tag: tag))}
             }
+    }
+
+    private func delete(_ req: Request) throws -> EventLoopFuture<OutputJson<String>> {
+        guard let idStr = req.parameters.get("id", as: String.self), let id = UUID(uuidString: idStr) else {
+            throw ApiError(code: OutputStatus.missParameters)
+        }
+        return req.repositoryTags.delete(id).transform(to: OutputJson(success: "成功删除"))
     }
 }

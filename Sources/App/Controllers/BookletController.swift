@@ -14,6 +14,7 @@ struct BookletController: RouteCollection {
         routes.group("booklet") { booklet in
             /// 小册列表
             booklet.get("list", use: bookletList)
+            booklet.get(":id", use: bookletDetail)
 
             /// 小册目录树
             booklet.get("catalog", use: catalogDetail)
@@ -67,6 +68,16 @@ extension BookletController {
         return req.repositoryCatalogs.findMenuTreeAt(catalogId: id).map{
              OutputJson(success: $0)
         }
+    }
+
+    func bookletDetail(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputBooklet>> {
+        guard let idStr = req.parameters.get("id", as: String.self), let id = UUID(uuidString: idStr) else {
+            throw ApiError(code: OutputStatus.missParameters)
+        }
+        return req.repositoryBooklets
+            .find(id)
+            .unwrap(or: ApiError(code: .bookletNotExist))
+            .map { OutputJson(success: OutputBooklet(booklet: $0)) }
     }
 
     func bookletAdd(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputBooklet>> {
@@ -147,6 +158,10 @@ extension BookletController {
     }
 
     func catalogUpdate(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputCatalog>> {
+        guard let _ = req.auth.get(User.self) else {
+            throw ApiError(code: OutputStatus.userNotExist)
+        }
+
         let catalogInput = try req.content.decode(InputCatalog.self)
 
         guard let catalogId = catalogInput.id, let uuid = UUID(uuidString: catalogId) else {
@@ -161,12 +176,20 @@ extension BookletController {
                 catalog.level = catalogInput.level
                 catalog.path = catalogInput.path
                 catalog.order = catalogInput.order
-                if let pid = catalogInput.pid {
-                    catalog.$parentCatalog.id = UUID(uuidString: pid)
-                } else {
-                    catalog.$parentCatalog.id = nil 
-                }
-                return req.repositoryCatalogs.saveBy(menu: catalog).transform(to: OutputJson(success: OutputCatalog(catalog: catalog)))
+
+                let topicUpdate: EventLoopFuture<Topic> = req.repositoryTopics
+                    .find(catalog.topicId!)
+                    .unwrap(or: ApiError(code: .topicNotExist))
+                    .flatMap { topic in
+                        topic.title = catalogInput.title
+                        topic.content = catalogInput.content
+                        return req.repositoryTopics.save(topic)
+                    }
+
+                return req.repositoryCatalogs
+                    .saveBy(menu: catalog)
+                    .and(topicUpdate)
+                    .transform(to: OutputJson(success: OutputCatalog(catalog: catalog)))
         }
 
     }

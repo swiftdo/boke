@@ -14,6 +14,7 @@ struct SubjectController: RouteCollection {
         routes.group("subject") { subject in
             let authGroup = subject.grouped(AccessToken.authenticator(), User.guardMiddleware())
             authGroup.post("add", use: add)
+            authGroup.post("delete", ":id", use: delete)
             subject.get(":id", "topics", use: getTopics)
             subject.get("all", use: getChannel)
         }
@@ -32,9 +33,16 @@ extension SubjectController {
             }
     }
 
+    private func delete(_ req: Request) throws -> EventLoopFuture<OutputJson<String>> {
+        guard let idStr = req.parameters.get("id", as: String.self), let id = UUID(uuidString: idStr) else {
+            throw ApiError(code: OutputStatus.missParameters)
+        }
+        return req.repositorySubjects.delete(for: id).transform(to: OutputJson(success: "成功删除"))
+    }
+
     private func getChannel(_ req: Request) throws -> EventLoopFuture<OutputJson<[OutputSubject]>> {
         return req.repositorySubjects
-            .all()
+            .channels()
             .map {
                 $0.map { OutputSubject(subject: $0) }
             }.map { OutputJson(success: $0)}

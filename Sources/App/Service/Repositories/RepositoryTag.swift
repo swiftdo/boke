@@ -13,6 +13,7 @@ protocol RepositoryTag: Repository {
     func find(name: String) -> EventLoopFuture<Tag?>
     func find(_ id: UUID?) -> EventLoopFuture<Tag?>
     func all() -> EventLoopFuture<[Tag]>
+    func delete(_ id: UUID) -> EventLoopFuture<Void>
 }
 
 struct DatabaseRepositoryTag: RepositoryTag, DatabaseRepository {
@@ -32,6 +33,10 @@ struct DatabaseRepositoryTag: RepositoryTag, DatabaseRepository {
 
     func all() -> EventLoopFuture<[Tag]> {
         return Tag.query(on: database).all()
+    }
+
+    func delete(_ id: UUID) -> EventLoopFuture<Void> {
+        return Tag.query(on: database).filter(\.$id == id).delete()
     }
 }
 

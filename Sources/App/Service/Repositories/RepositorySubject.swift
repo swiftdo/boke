@@ -15,6 +15,7 @@ protocol RepositorySubject: Repository {
     func delete(_ subject: Subject) -> EventLoopFuture<Void>
     func count() -> EventLoopFuture<Int>
     func all() -> EventLoopFuture<[Subject]>
+    func channels() -> EventLoopFuture<[Subject]>
     func delete(for subjectID: UUID) -> EventLoopFuture<Void>
 }
 
@@ -39,6 +40,10 @@ struct DatabaseRepositorySubject: RepositorySubject, DatabaseRepository {
     }
     func delete(for subjectID: UUID) -> EventLoopFuture<Void> {
         return Subject.query(on: database).filter(\.$id == subjectID).delete()
+    }
+
+    func channels() -> EventLoopFuture<[Subject]> {
+        return Subject.query(on: database).filter(\.$name != "booklet").all()
     }
 
     func all() -> EventLoopFuture<[Subject]> {

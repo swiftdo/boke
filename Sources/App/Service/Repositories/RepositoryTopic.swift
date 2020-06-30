@@ -11,6 +11,8 @@ import Fluent
 protocol RepositoryTopic: Repository {
     func create(_ topic: Topic) -> EventLoopFuture<Void>
     func find(_ id: UUID) -> EventLoopFuture<Topic?>
+    func delete(_ id: UUID) -> EventLoopFuture<Void>
+    func save(_ topic: Topic) -> EventLoopFuture<Topic>
 }
 
 struct DatabaseRepositoryTopic: RepositoryTopic, DatabaseRepository {
@@ -18,6 +20,14 @@ struct DatabaseRepositoryTopic: RepositoryTopic, DatabaseRepository {
 
     func create(_ topic: Topic) -> EventLoopFuture<Void> {
         return topic.create(on: database)
+    }
+
+    func delete(_ id: UUID) -> EventLoopFuture<Void> {
+        return Topic.query(on: database).filter(\.$id == id).delete()
+    }
+
+    func save(_ topic: Topic) -> EventLoopFuture<Topic> {
+        return topic.update(on: database).map { topic }
     }
 
     func find(_ id: UUID) -> EventLoopFuture<Topic?> {

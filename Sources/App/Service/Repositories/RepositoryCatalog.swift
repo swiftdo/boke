@@ -58,7 +58,7 @@ struct DatabaseRepositoryCatalog: RepositoryCatalog, DatabaseRepository {
             }
 
         } else {
-            menu.level = 1
+            menu.level = 0
             return menu.save(on: database).map { menu }
         }
     }
@@ -77,7 +77,9 @@ struct DatabaseRepositoryCatalog: RepositoryCatalog, DatabaseRepository {
 
     /// 获取组装好的菜单, 以树的形式显示
     func getMenuTree(menusRoot: [OutputCatalog], pid: UUID? = nil) -> [OutputCatalog] {
-        return menusRoot.filter { $0.pid == pid }
+        return menusRoot.filter { $0.pid == pid }.sorted(by: { (a, b) -> Bool in
+            return a.order < b.order
+        })
             .compactMap { menu in
                 var menu = menu
                 menu.child = self.getChildTree(menuId: menu.id!, menusRoot: menusRoot)
@@ -90,6 +92,9 @@ struct DatabaseRepositoryCatalog: RepositoryCatalog, DatabaseRepository {
         return menusRoot
             .filter { $0.pid != nil && $0.pid == menuId }
             .filter { $0.id != nil }
+            .sorted(by: { (a, b) -> Bool in
+                return a.order < b.order
+            })
             .compactMap { menu in
                 var menu = menu
                 menu.child = self.getChildTree(menuId: menu.id!, menusRoot: menusRoot)
@@ -105,7 +110,7 @@ struct DatabaseRepositoryCatalog: RepositoryCatalog, DatabaseRepository {
                 let tree = menus.filter{ catalog in
                     let ids = catalog.path?.split(separator: ",").map{ UUID(String($0))} ?? []
                     return ids.contains(catalogId)
-                }.map { return OutputCatalog(catalog: $0)}
+                }.map { return OutputCatalog(catalog: $0) }
                 return self.getMenuTree(menusRoot: tree, pid: catalogId)
         }
     }

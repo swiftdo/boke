@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Vapor
 
 
 struct InputCatalog : Input {
@@ -18,4 +19,5 @@ struct InputCatalog : Input {
     var order: Int
     var remarks: String?
 }
+
 
