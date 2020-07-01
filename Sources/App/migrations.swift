@@ -20,5 +20,5 @@ func migrations(_ app: Application) throws {
     app.migrations.add(CreateTopicTag())
     app.migrations.add(CreateBooklet())
 
-    try app.autoMigrate().wait()
+//    try app.autoMigrate().wait()
 }
