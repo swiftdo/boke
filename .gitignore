@@ -7,3 +7,5 @@ DerivedData/
 db.sqlite
 .swiftpm
 
+volumes/nginx/*/*
+
