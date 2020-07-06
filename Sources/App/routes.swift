@@ -9,7 +9,7 @@ func routes(_ app: Application) throws {
 
     app.get("hello") { req -> String in
 
-        return "Hello, oldbirds!"
+        return "Hello, oldbirds! docker"
     }
 
     let tokenAuthRoutes = app.grouped(AccessToken.authenticator(), User.guardMiddleware())
