@@ -51,7 +51,7 @@ services:
       ]
 
   migrate:
-    image: oldbirds:latest
+    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:1.1.0
     environment:
       <<: *shared_environment
     depends_on:
@@ -61,7 +61,7 @@ services:
       replicas: 0
 
   revert:
-    image: oldbirds:latest
+    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:1.1.0
     environment:
       <<: *shared_environment
     depends_on:
