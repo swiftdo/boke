@@ -19,6 +19,8 @@ struct OutputTopic: Output {
     let createdAt: TimeInterval?
     let remarks: String?
     let content: String
+    let url: String?
+    let source: String?
 
     init(topic: Topic) {
         self.id = topic.id
@@ -32,6 +34,8 @@ struct OutputTopic: Output {
         self.remarks = topic.remarks
         self.createdAt = topic.createdAt?.timeIntervalSince1970
         self.content = topic.content
+        self.url = topic.url
+        self.source = topic.source
     }
 
 }

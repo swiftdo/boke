@@ -77,7 +77,9 @@ extension TopicController {
                                   authorID: user.requireID(),
                                   contentType: inputTopic.contentType,
                                   cover: inputTopic.cover,
-                                  weight: inputTopic.weight)
+                                  weight: inputTopic.weight,
+                                  url: inputTopic.url,
+                                  source: inputTopic.source)
 
         }.flatMap { topic in
             return req.repositoryTopics.create(topic).map { topic }
