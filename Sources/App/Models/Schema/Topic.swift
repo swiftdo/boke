@@ -51,9 +51,15 @@ final class Topic: Content, Model {
     @Timestamp(key: "deleted_at", on: .delete)
     var deletedAt: Date?
 
+    @OptionalField(key: "url")
+    var url: String?
+
+    @OptionalField(key: "source")
+    var source: String?
+
     init() {}
 
-    init(title: String, content: String, subjectID: UUID, authorID: UUID, contentType: ContentType, cover:String? = nil,  weight:Int = 0) {
+    init(title: String, content: String, subjectID: UUID, authorID: UUID, contentType: ContentType, cover:String? = nil,  weight:Int = 0, url: String? = nil, source: String? = nil) {
         self.title = title
         self.content = content
         self.contentType = contentType
@@ -61,6 +67,8 @@ final class Topic: Content, Model {
         self.$subject.id = subjectID
         self.$author.id = authorID
         self.cover = cover
+        self.url = url
+        self.source = source
     }
 
 
