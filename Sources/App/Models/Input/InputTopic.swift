@@ -16,7 +16,7 @@ struct InputTopic: Input {
     var remarks: String?
     var contentType: Topic.ContentType // 必传
     var weight: Int // 权重
-    var url: Stirng? // 转载文章的来源
+    var url: String? // 转载文章的来源
     var source: String? // 转载来源
 }
 
