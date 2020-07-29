@@ -32,7 +32,7 @@ x-shared_environment: &shared_environment
 
 services:
   app:
-    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:1.1.0
+    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:1.1.2
     environment:
       <<: *shared_environment
     depends_on:
@@ -51,7 +51,7 @@ services:
       ]
 
   migrate:
-    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:1.1.0
+    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:1.1.2
     environment:
       <<: *shared_environment
     depends_on:
@@ -61,7 +61,7 @@ services:
       replicas: 0
 
   revert:
-    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:1.1.0
+    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:1.1.2
     environment:
       <<: *shared_environment
     depends_on:
