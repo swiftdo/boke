@@ -14,6 +14,7 @@ protocol RepositoryUser: Repository {
     func all() -> EventLoopFuture<[User]>
     func find(id: UUID?) -> EventLoopFuture<User?>
     func find(email: String) -> EventLoopFuture<User?>
+    func update(user: User) -> EventLoopFuture<User>
     func count() -> EventLoopFuture<Int>
 }
 
@@ -46,6 +47,10 @@ struct DatabaseRepositoryUser: RepositoryUser, DatabaseRepository {
 
     func count() -> EventLoopFuture<Int> {
         return User.query(on: database).count()
+    }
+
+    func update(user: User) -> EventLoopFuture<User> {
+        return user.update(on: database).map { user }
     }
 }
 

@@ -14,6 +14,12 @@ struct AuthController: RouteCollection {
         routes.group("auth") { auth in
             auth.post("register", use: register)
             auth.post("login", use: login)
+
+            let authGroup = auth.grouped(AccessToken.authenticator(), User.guardMiddleware())
+
+            authGroup.post("user", "update", use: updateUser)
+
+            
 //            auth.group("email", "verification") { emailVerificationRoutes in
 //                emailVerificationRoutes.post("", use: sendEmailVerification)
 //                emailVerificationRoutes.get("", use: verifyEmail)
@@ -89,6 +95,30 @@ extension AuthController {
             .authentication(refreshToken: inputAccessToken.refreshToken)
             .map{ OutputJson(success: $0) }
     }
+
+
+    private func updateUser(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputUser>> {
+        guard let user = req.auth.get(User.self) else {
+            throw ApiError(code: OutputStatus.userNotExist)
+        }
+
+        let inputUser = try req.content.decode(InputUser.self)
+
+        if let avatar = inputUser.avatar {
+            user.avatar = avatar
+        }
+
+        if let name = inputUser.name {
+            user.name = name
+        }
+
+        return req.repositoryUsers.update(user: user).map {user in
+            OutputJson(success: OutputUser(from: user))
+        }
+
+        
+    }
+
 //    private func sendEmailVerification(_ req: Request) throws -> EventLoopFuture<HTTPStatus>{}
 //    private func recoverAccount(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {}
 //    private func verifyEmail(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {}

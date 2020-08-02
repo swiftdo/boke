@@ -57,8 +57,6 @@ extension Application {
             }
         }
     }
-
-
 }
 
 extension Application {

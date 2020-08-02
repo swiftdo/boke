@@ -17,6 +17,14 @@ public func configure(_ app: Application) throws {
     app.middleware.use(cors)
     app.middleware.use(error)
 
+    // 本地
+//    app.databases.use(.postgres(
+//        hostname: Environment.get("DATABASE_HOST") ?? "localhost",
+//        username: Environment.get("DATABASE_USERNAME") ?? "root", // root
+//        password: Environment.get("DATABASE_PASSWORD") ?? "",
+//        database: Environment.get("DATABASE_NAME") ?? "oldbirds" // oldbirds
+//    ), as: .psql)
+
     app.databases.use(.postgres(
         hostname: Environment.get("DATABASE_HOST") ?? "localhost",
         username: Environment.get("DATABASE_USERNAME") ?? "vapor_username",

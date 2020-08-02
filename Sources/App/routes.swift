@@ -30,5 +30,6 @@ func routes(_ app: Application) throws {
         try api.register(collection: TagController())
         try api.register(collection: TopicController())
         try api.register(collection: BookletController())
+        try api.register(collection: AppController())
     }
 }
