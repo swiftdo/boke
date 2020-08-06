@@ -24,7 +24,7 @@ public func configure(_ app: Application) throws {
 //        password: Environment.get("DATABASE_PASSWORD") ?? "",
 //        database: Environment.get("DATABASE_NAME") ?? "oldbirds" // oldbirds
 //    ), as: .psql)
-
+//
     app.databases.use(.postgres(
         hostname: Environment.get("DATABASE_HOST") ?? "localhost",
         username: Environment.get("DATABASE_USERNAME") ?? "vapor_username",
