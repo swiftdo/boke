@@ -39,7 +39,7 @@ struct AuthController: RouteCollection {
 
 extension AuthController {
     private func register(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputCreate>> {
-        try InputRegister.validate(req)
+        try InputRegister.validate(content: req)
         let inputRegister = try req.content.decode(InputRegister.self)
 
         return req.repositoryUserAuths
@@ -62,7 +62,7 @@ extension AuthController {
     }
 
     private func login(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputLogin>> {
-        try InputLogin.validate(req)
+        try InputLogin.validate(content: req)
         let inputLogin = try req.content.decode(InputLogin.self)
         return req.repositoryUserAuths
             .find(authType: .email, identifier: inputLogin.email)

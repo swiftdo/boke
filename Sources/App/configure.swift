@@ -17,22 +17,39 @@ public func configure(_ app: Application) throws {
     app.middleware.use(cors)
     app.middleware.use(error)
 
-    // 本地
-//    app.databases.use(.postgres(
-//        hostname: Environment.get("DATABASE_HOST") ?? "localhost",
-//        username: Environment.get("DATABASE_USERNAME") ?? "root", // root
-//        password: Environment.get("DATABASE_PASSWORD") ?? "",
-//        database: Environment.get("DATABASE_NAME") ?? "oldbirds" // oldbirds
-//    ), as: .psql)
-//
-    app.databases.use(.postgres(
-        hostname: Environment.get("DATABASE_HOST") ?? "localhost",
-        username: Environment.get("DATABASE_USERNAME") ?? "vapor_username",
-        password: Environment.get("DATABASE_PASSWORD") ?? "vapor_password",
-        database: Environment.get("DATABASE_NAME") ?? "vapor_database"
-    ), as: .psql)
+    /// 初始化数据库
+    if let dbURL = Environment.dbURL {
+        app.databases.use(try .postgres(url: dbURL), as: .psql)
+    } else {
+        switch app.environment {
+        case .production:
+            app.databases.use(.postgres(
+                hostname: Environment.dbHost ?? "localhost",
+                username: Environment.dbUser ?? "username",
+                password: Environment.dbPwd  ?? "password",
+                database: Environment.dbName ?? "boke"
+            ), as: .psql)
+        default:
+            // macos
+            app.databases.use(.postgres(
+                hostname: Environment.dbHost ?? "localhost",
+                username: Environment.dbUser ?? "root",
+                password: Environment.dbPwd  ?? "",
+                database: Environment.dbName ?? "oldbirds"
+            ), as: .psql)
+        }
+    }
 
     try routes(app)
     try migrations(app)
     try services(app)
 }
+
+extension Environment {
+    static let dbHost = Self.get("DATABASE_HOST")
+    static let dbUser = Self.get("DATABASE_USERNAME")
+    static let dbPwd  = Self.get("DATABASE_PASSWORD")
+    static let dbName = Self.get("DATABASE_NAME")
+    static let dbURL  = Self.get("DATABASE_URL")
+}
+
