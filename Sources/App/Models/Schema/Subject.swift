@@ -8,27 +8,16 @@
 import Fluent
 import Vapor
 
-final class Subject: Content, Model {
+final class Subject: Model {
 
     static let schema = "subjects"
 
-    @ID(key: .id)
-    var id: UUID?
-
-    @Field(key: "name")
-    var name: String
-
-    @OptionalField(key: "cover")
-    var cover: String?
-
-    @OptionalField(key: "remarks")
-    var remarks: String?
-
-    @Children(for: \.$subject)
-    var topics: [Topic]
-
-    @Timestamp(key: "created_at", on: .create)
-    var createdAt: Date?
+    @ID(key: .id) var id: UUID?
+    @Field(key: FieldKeys.name) var name: String
+    @OptionalField(key: FieldKeys.cover) var cover: String?
+    @OptionalField(key: FieldKeys.remarks) var remarks: String?
+    @Children(for: \.$subject) var topics: [Topic]
+    @Timestamp(key: FieldKeys.createdAt, on: .create) var createdAt: Date?
 
     init(){ }
 
@@ -37,5 +26,13 @@ final class Subject: Content, Model {
         self.remarks = remarks
         self.cover = cover
     }
+}
 
+extension Subject {
+    struct FieldKeys {
+        static var name: FieldKey { "name" }
+        static var cover: FieldKey { "cover" }
+        static var remarks: FieldKey { "remarks" }
+        static var createdAt: FieldKey { "created_at" }
+    }
 }

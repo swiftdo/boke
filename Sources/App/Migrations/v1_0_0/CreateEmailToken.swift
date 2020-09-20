@@ -11,9 +11,9 @@ struct CreateEmailToken: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
         return database.schema(EmailToken.schema)
             .id()
-            .field("user_id", .uuid, .references(User.schema, "id"))
-            .field("token", .string, .required)
-            .field("expires_at", .datetime, .required)
+            .field(EmailToken.FieldKeys.userId, .uuid, .references(User.schema, .id))
+            .field(EmailToken.FieldKeys.token, .string, .required)
+            .field(EmailToken.FieldKeys.expiresAt, .datetime, .required)
             .create()
     }
 

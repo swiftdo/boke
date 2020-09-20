@@ -11,11 +11,11 @@ struct CreateAccessToken: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
         return database.schema(AccessToken.schema)
             .id()
-            .field("user_id", .uuid, .references(User.schema, "id"))
-            .field("token", .string, .required)
-            .field("expires_at", .datetime, .required)
-            .unique(on:"user_id")
-            .unique(on:"token")
+            .field(AccessToken.FieldKeys.userId, .uuid, .references(User.schema, .id))
+            .field(AccessToken.FieldKeys.token, .string, .required)
+            .field(AccessToken.FieldKeys.expiresAt, .datetime, .required)
+            .unique(on: AccessToken.FieldKeys.userId)
+            .unique(on: AccessToken.FieldKeys.token)
             .create()
     }
 

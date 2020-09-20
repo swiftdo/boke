@@ -11,8 +11,8 @@ struct CreateTopicTag: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
         return database.schema(TopicTag.schema)
             .id()
-            .field("tag_id", .uuid, .required, .references(Tag.schema, "id"))
-            .field("topic_id", .uuid, .required, .references(Topic.schema, "id"))
+            .field(TopicTag.FieldKeys.tagId, .uuid, .required, .references(Tag.schema, .id))
+            .field(TopicTag.FieldKeys.topicId, .uuid, .required, .references(Topic.schema, .id))
             .create()
     }
 

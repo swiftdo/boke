@@ -11,11 +11,11 @@ struct CreateRefreshToken: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
         return database.schema(RefreshToken.schema)
             .id()
-            .field("user_id", .uuid, .references(User.schema, "id"))
-            .field("token", .string, .required)
-            .field("expires_at", .datetime, .required)
-            .unique(on:"user_id")
-            .unique(on:"token")
+            .field(RefreshToken.FieldKeys.userId, .uuid, .references(User.schema, .id))
+            .field(RefreshToken.FieldKeys.token, .string, .required)
+            .field(RefreshToken.FieldKeys.expiresAt, .datetime, .required)
+            .unique(on:RefreshToken.FieldKeys.userId)
+            .unique(on:RefreshToken.FieldKeys.token)
             .create()
     }
 

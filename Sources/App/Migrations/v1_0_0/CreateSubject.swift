@@ -11,10 +11,10 @@ struct CreateSubject: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
         return database.schema(Subject.schema)
             .id()
-            .field("name", .string, .required)
-            .field("remarks", .string)
-            .field("cover", .string)
-            .field("created_at", .datetime)
+            .field(Subject.FieldKeys.name, .string, .required)
+            .field(Subject.FieldKeys.remarks, .string)
+            .field(Subject.FieldKeys.cover, .string)
+            .field(Subject.FieldKeys.createdAt, .datetime)
             .create()
     }
 

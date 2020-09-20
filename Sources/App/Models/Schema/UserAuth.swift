@@ -8,30 +8,18 @@
 import Fluent
 import Vapor
 
-final class UserAuth: Model, Content {
+final class UserAuth: Model {
 
     static let schema = "user_auths"
 
-    @ID(key: .id)
-    var id: UUID?
+    @ID(key: .id) var id: UUID?
+    @Parent(key: FieldKeys.userId) var user: User
 
-    @Parent(key: "user_id")  // 1 - n
-    var user: User
-
-    @Enum(key: "auth_type") // 认证类型
-    var authType: AuthType
-
-    @Field(key: "identifier")
-    var identifier: String // 标志 (手机号，邮箱，用户名或第三方应用的唯一标识)
-
-    @Field(key: "credential")
-    var credential: String // 密码凭证(站内的保存密码， 站外的不保存或保存 token)
-
-    @Timestamp(key: "created_at", on: .create)
-    var createdAt: Date?
-
-    @Timestamp(key: "updated_at", on: .update)
-    var updatedAt: Date?
+    @Enum(key: FieldKeys.authType) var authType: AuthType
+    @Field(key: FieldKeys.identifier) var identifier: String // 标志 (手机号，邮箱，用户名或第三方应用的唯一标识)
+    @Field(key: FieldKeys.credential) var credential: String // 密码凭证(站内的保存密码， 站外的不保存或保存 token)
+    @Timestamp(key: FieldKeys.createdAt, on: .create) var createdAt: Date?
+    @Timestamp(key: FieldKeys.updatedAt, on: .update) var updatedAt: Date?
 
     init() { }
 
@@ -41,6 +29,17 @@ final class UserAuth: Model, Content {
         self.authType = authType
         self.identifier = identifier
         self.credential = credential
+    }
+}
+
+extension UserAuth {
+    struct FieldKeys {
+        static var userId: FieldKey { "user_id" }
+        static var authType: FieldKey { "auth_type" }
+        static var identifier: FieldKey { "identifier" }
+        static var credential: FieldKey { "credential" }
+        static var createdAt: FieldKey { "created_at" }
+        static var updatedAt: FieldKey { "updated_at" }
     }
 }
 

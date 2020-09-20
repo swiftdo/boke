@@ -8,22 +8,16 @@
 import Fluent
 import Vapor
 
-final class RefreshToken: Model, Content {
+final class RefreshToken: Model {
+
     static let schema = "refresh_tokens"
+
     typealias Token = String
 
-    @ID(key: .id)
-    var id: UUID?
-
-    @Field(key: "token")
-    var token: Token
-
-    @Parent(key: "user_id")
-    var user: User
-
-    @Field(key: "expires_at")
-    var expiresAt: Date
-
+    @ID(key: .id)var id: UUID?
+    @Field(key: FieldKeys.token) var token: Token
+    @Parent(key: FieldKeys.userId) var user: User
+    @Field(key: FieldKeys.expiresAt)var expiresAt: Date
 
     init() { }
 
@@ -32,6 +26,14 @@ final class RefreshToken: Model, Content {
         self.$user.id = userId
         self.token = token
         self.expiresAt = Date().addingTimeInterval(Const.expirationInterval)
+    }
+}
+
+extension RefreshToken {
+    struct FieldKeys {
+        static var token: FieldKey { "token" }
+        static var userId: FieldKey { "user_id" }
+        static var expiresAt: FieldKey { "expires_at" }
     }
 }
 

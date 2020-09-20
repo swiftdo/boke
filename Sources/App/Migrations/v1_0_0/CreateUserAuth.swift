@@ -13,15 +13,15 @@ struct CreateUserAuth: Migration {
             .case("email")
             .case("wxapp")
             .create()
-            .flatMap { autuType in
-                return database.schema(UserAuth.schema)
+            .flatMap { authType in
+                database.schema(UserAuth.schema)
                     .id()
-                    .field("user_id", .uuid, .references(User.schema, "id"))
-                    .field("identifier", .string, .required)
-                    .field("credential", .string, .required)
-                    .field("auth_type", autuType, .required)
-                    .field("created_at", .datetime)
-                    .field("updated_at", .datetime)
+                    .field(UserAuth.FieldKeys.userId, .uuid, .references(User.schema, .id))
+                    .field(UserAuth.FieldKeys.authType, authType, .required)
+                    .field(UserAuth.FieldKeys.identifier, .string, .required)
+                    .field(UserAuth.FieldKeys.credential, .string, .required)
+                    .field(UserAuth.FieldKeys.createdAt, .datetime)
+                    .field(UserAuth.FieldKeys.updatedAt, .datetime)
                     .create()
         }
     }

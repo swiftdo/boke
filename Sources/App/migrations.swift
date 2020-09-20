@@ -19,8 +19,9 @@ func migrations(_ app: Application) throws {
     app.migrations.add(CreateCatalog())
     app.migrations.add(CreateTopicTag())
     app.migrations.add(CreateBooklet())
+    app.migrations.add(BlogMigrationSeed())
 
-    app.migrations.add(TopicAddURLSourceMigration())
+//    app.migrations.add(TopicAddURLSourceMigration())
 
 //    try app.autoMigrate().wait()
 }

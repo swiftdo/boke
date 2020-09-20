@@ -10,23 +10,23 @@ import Vapor
 
 final class TopicTag: Model {
 
-    static let schema = "topic_tag"
+    static let schema = "topic_tags"
 
-    @ID(key: .id)
-    var id: UUID?
-
-    @Parent(key: "tag_id")
-    var tag: Tag
-
-
-    @Parent(key: "topic_id")
-    var topic: Topic
+    @ID(key: .id) var id: UUID?
+    @Parent(key: FieldKeys.tagId) var tag: Tag
+    @Parent(key: FieldKeys.topicId) var topic: Topic
 
     init() {}
 
-    init(tagID: UUID, topicID: UUID) {
-        self.$tag.id = tagID
-        self.$topic.id = topicID
+    init(tagId: UUID, topicId: UUID) {
+        self.$tag.id = tagId
+        self.$topic.id = topicId
     }
+}
 
+extension TopicTag {
+    struct FieldKeys {
+        static var tagId: FieldKey { "tag_id" }
+        static var topicId: FieldKey { "topic_id" }
+    }
 }

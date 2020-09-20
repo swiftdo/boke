@@ -9,36 +9,18 @@ import Fluent
 import Vapor
 
 final class User: Model, Content {
+
     static let schema = "users"
 
-    @ID(key: .id)
-    var id: UUID?
-
-    @Field(key: "name")
-    var name: String
-
-    @Field(key: "email")
-    var email: String
-
-    @Field(key: "is_email_verified")
-    var isEmailVerified: Bool // 用户状态, default false 未激活
-
-    @Field(key: "avatar")
-    var avatar: String?
-
-    @Timestamp(key: "created_at", on: .create)
-    var createdAt: Date?
-
-    @Timestamp(key: "updated_at", on: .update)
-    var updatedAt: Date?
-
-    @Children(for: \.$user)
-    var userAuths: [UserAuth]
-
-    @Children(for: \.$author)
-    var topics: [Topic]
-
-
+    @ID(key: .id) var id: UUID?
+    @Field(key: FieldKeys.name) var name: String
+    @Field(key: FieldKeys.email) var email: String
+    @Field(key: FieldKeys.isEmailVerified) var isEmailVerified: Bool // 用户状态, default false 未激活
+    @Field(key: FieldKeys.avatar) var avatar: String?
+    @Timestamp(key: FieldKeys.createdAt, on: .create) var createdAt: Date?
+    @Timestamp(key: FieldKeys.updatedAt, on: .update) var updatedAt: Date?
+    @Children(for: \.$user) var userAuths: [UserAuth]
+    @Children(for: \.$author) var topics: [Topic]
 
     init() { }
 
@@ -48,6 +30,17 @@ final class User: Model, Content {
         self.email = email
         self.isEmailVerified = isEmailVerified
         self.avatar = avatar
+    }
+}
+
+extension User {
+    struct FieldKeys {
+        static var name: FieldKey { "name" }
+        static var email: FieldKey {"email" }
+        static var isEmailVerified: FieldKey { "is_email_verified" }
+        static var avatar: FieldKey { "avatar" }
+        static var createdAt: FieldKey { "created_at" }
+        static var updatedAt: FieldKey { "updated_at" }
     }
 }
 
