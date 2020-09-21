@@ -74,42 +74,6 @@
         }
       },
       {
-        "package": "queues",
-        "repositoryURL": "https://github.com/vapor/queues.git",
-        "state": {
-          "branch": null,
-          "revision": "649737c904b20d14bfbfaf35e38a3a106ddf75e3",
-          "version": "1.4.0"
-        }
-      },
-      {
-        "package": "queues-redis-driver",
-        "repositoryURL": "https://github.com/vapor/queues-redis-driver.git",
-        "state": {
-          "branch": null,
-          "revision": "2212b5daf46a35de6da1ea91af2e0cc927247ccb",
-          "version": "1.0.0-rc.3"
-        }
-      },
-      {
-        "package": "redis-kit",
-        "repositoryURL": "https://github.com/vapor/redis-kit.git",
-        "state": {
-          "branch": null,
-          "revision": "a650bada7d7658064517e8ca17c92b854c91eb07",
-          "version": "1.0.0-beta.5.1"
-        }
-      },
-      {
-        "package": "RediStack",
-        "repositoryURL": "https://gitlab.com/mordil/RediStack.git",
-        "state": {
-          "branch": null,
-          "revision": "8b75ef7f0e3cb82c69f2e2b47ea8f49e7d4e2ca9",
-          "version": "1.0.0-alpha.10"
-        }
-      },
-      {
         "package": "routing-kit",
         "repositoryURL": "https://github.com/vapor/routing-kit.git",
         "state": {
@@ -213,8 +177,8 @@
         "repositoryURL": "https://github.com/vapor/vapor.git",
         "state": {
           "branch": null,
-          "revision": "66f412bcb276c09ad3a5df263f159cee9fecc310",
-          "version": "4.29.1"
+          "revision": "1f8e3ce262d356e1589272682891e051f9da36d0",
+          "version": "4.29.2"
         }
       },
       {

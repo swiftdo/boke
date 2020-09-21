@@ -14,6 +14,7 @@ func services(_ app: Application) throws {
     /// 初始化 Repositorys
     app.repositories.use(.database)
 
+    /// 添加邮箱服务
     app.smtp.use(SMTPServerConfig(hostname: "smtp.163.com",
                                   port: 465,
                                   username: "13576051334@163.com",
