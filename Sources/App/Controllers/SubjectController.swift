@@ -50,26 +50,46 @@ extension SubjectController {
     }
 
     private func getTopics(_ req: Request) throws -> EventLoopFuture<OutputJson<Page<OutputTopic>>> {
-        guard let idStr = req.parameters.get("id", as: String.self), let id = UUID(uuidString: idStr) else {
-            throw ApiError(code: OutputStatus.missParameters)
-        }
-
-        return req.repositorySubjects
-            .find(id: id)
-            .unwrap(or: ApiError(code: .subjectNotExist))
-            .flatMap { subject in
-                return subject.$topics
-                    .query(on: req.db)
-                    .sort(\.$createdAt, .descending)
-                    .with(\.$subject)
-                    .with(\.$author)
-                    .with(\.$tags)
-                    .paginate(for: req)
-                    .map { page in
-                        return page.map{ OutputTopic(topic: $0) }
+        if let idStr = req.parameters.get("id", as: String.self), let id = UUID(uuidString: idStr) {
+            return req.repositorySubjects
+                .find(id: id)
+                .unwrap(or: ApiError(code: .subjectNotExist))
+                .flatMap { subject in
+                    return subject.$topics
+                        .query(on: req.db)
+                        .sort(\.$createdAt, .descending)
+                        .with(\.$subject)
+                        .with(\.$author)
+                        .with(\.$tags)
+                        .paginate(for: req)
+                        .map { page in
+                            return page.map{ OutputTopic(topic: $0) }
+                    }
+            }.map {
+                OutputJson(success: $0)
+            }
+        } else { // 如果没有 subjectId, 就返回全部 topics, 除了 booklet
+            return req.repositorySubjects
+                .find(name: "booklet")
+                .unwrap(or: ApiError.init(code: .subjectNotExist))
+                .flatMapThrowing{ subject in
+                    try subject.requireID()
                 }
-        }.map {
-            OutputJson(success: $0)
+                .flatMap { subjectId in
+                    return Topic
+                        .query(on: req.db)
+                        .filter(\.$subject.$id != subjectId) // booklet
+                        .sort(\.$createdAt, .descending)
+                        .with(\.$subject)
+                        .with(\.$author)
+                        .with(\.$tags)
+                        .paginate(for: req)
+                        .map { page in
+                            return page.map{ OutputTopic(topic: $0) }
+                        }.map {
+                            return OutputJson(success: $0)
+                        }
+                }
         }
     }
 }

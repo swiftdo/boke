@@ -34,16 +34,26 @@ extension TopicController {
     }
 
     private func all(_ req: Request) throws -> EventLoopFuture<OutputJson<Page<OutputTopic>>> {
-        return Topic.query(on: req.db)
-            .sort(\.$createdAt, .descending)
-            .with(\.$subject)
-            .with(\.$author)
-            .with(\.$tags)
-            .paginate(for: req)
-            .map { page in
-                return page.map{ OutputTopic(topic: $0) }
-            }.map {
-                return OutputJson(success: $0)
+        return req.repositorySubjects
+            .find(name: "booklet")
+            .unwrap(or: ApiError.init(code: .subjectNotExist))
+            .flatMapThrowing{ subject in
+                try subject.requireID()
+            }
+            .flatMap { subjectId in
+                return Topic
+                .query(on: req.db)
+                    .filter(\.$subject.$id != subjectId) // booklet
+                .sort(\.$createdAt, .descending)
+                .with(\.$subject)
+                .with(\.$author)
+                .with(\.$tags)
+                .paginate(for: req)
+                .map { page in
+                    return page.map{ OutputTopic(topic: $0) }
+                }.map {
+                    return OutputJson(success: $0)
+                }
             }
     }
 
