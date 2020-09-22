@@ -29,7 +29,10 @@ RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app
 WORKDIR /app
 
 # Copy build artifacts
-COPY --from=build --chown=vapor:vapor /build/.build/release /app
+# 阿里云容器服务不支持
+COPY /build/.build/release /app
+RUN sudo chown -R vapor:vapor /build/.build/release
+# COPY --from=build --chown=vapor:vapor /app
 # Uncomment the next line if you need to load resources from the `Public` directory
 #COPY --from=build --chown=vapor:vapor /build/Public /app/Public
 
