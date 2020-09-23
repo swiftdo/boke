@@ -1,5 +1,6 @@
 import Fluent
 import FluentPostgresDriver
+import QueuesRedisDriver
 import Vapor
 
 // configures your application
@@ -40,6 +41,18 @@ public func configure(_ app: Application) throws {
         }
     }
 
+    /// queue
+    switch app.environment {
+    case .production:
+        try app.queues.use(.redis(url: "redis://\(Environment.redisHost ?? "127.0.0.1"):6379"))
+    default:
+        try app.queues.use(.redis(url: "redis://127.0.0.1:6379"))
+    }
+    let emailJob = EmailJob()
+    app.queues.add(emailJob)
+
+    try app.queues.startInProcessJobs(on: .default)
+
     try routes(app)
     try migrations(app)
     try services(app)
@@ -51,5 +64,7 @@ extension Environment {
     static let dbPwd  = Self.get("DATABASE_PASSWORD")
     static let dbName = Self.get("DATABASE_NAME")
     static let dbURL  = Self.get("DATABASE_URL")
+
+    static let redisHost = Self.get("REDIS_HOST")
 }
 

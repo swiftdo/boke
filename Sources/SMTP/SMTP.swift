@@ -34,11 +34,11 @@ public struct SMTP {
         self.eventLoopGroup = application.eventLoopGroup
     }
     
-    init(application: Application, on eventLoop: EventLoop) {
+    public init(application: Application, on eventLoop: EventLoop) {
         self.application = application
         self.eventLoopGroup = eventLoop
     }
-    
+
     public func use(_ config: SMTPServerConfig) {
         self.configuration = config
     }
@@ -73,7 +73,7 @@ public struct SMTP {
             return channel.pipeline.addHandlers(handlers, position: .last)
         }
     }
-    
+
     public func send(_ email: Email) -> EventLoopFuture<Error?> {
         let emailSentPromise: EventLoopPromise<Void> = self.eventLoopGroup.next().makePromise()
         let completedPromise: EventLoopPromise<Error?> = self.eventLoopGroup.next().makePromise(of: Error?.self)
@@ -82,8 +82,7 @@ public struct SMTP {
         bootstrap = configureBootstrap(group: self.eventLoopGroup,
                                        email: email,
                                        emailSentPromise: emailSentPromise)
-        self.application.logger.debug("Configured Bootstrap")
-        
+
         let connection = bootstrap.connect(host: self.configuration.hostname, port: self.configuration.port)
         
         connection.cascadeFailure(to: emailSentPromise)
@@ -92,7 +91,6 @@ public struct SMTP {
             connection.whenSuccess { $0.close(promise: nil) }
             completedPromise.succeed(nil)
         }.whenFailure { error in
-            self.application.logger.error("\(error.localizedDescription)")
             connection.whenSuccess { $0.close(promise: nil) }
             completedPromise.succeed(error)
         }

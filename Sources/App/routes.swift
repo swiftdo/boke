@@ -1,6 +1,6 @@
 import Fluent
 import Vapor
-import SMTP
+import Queues
 
 func routes(_ app: Application) throws {
     app.get { req in
@@ -18,10 +18,13 @@ func routes(_ app: Application) throws {
     }
 
     app.get("send-email") { req in
-        req.smtp
-            .send(Email(from: EmailAddress(address: "13576051334@163.com", name: "lai"), to: [EmailAddress(address: "1814345797@qq.com", name: "小号")], subject: "测试", body: "hello world")).map { err in
-                return OutputJson(success: "\(String(describing: err))")
-        }
+        req.queue
+            .dispatch(
+                EmailJob.self,
+                EmailContent.init(to: "1164258202@qq.com", message: "hello world", subject: "测试")
+            ).map {
+                OutputJson(success: "ok")
+            }
     }
 
     try app.group("api") { api in
@@ -31,5 +34,6 @@ func routes(_ app: Application) throws {
         try api.register(collection: TopicController())
         try api.register(collection: BookletController())
         try api.register(collection: AppController())
+        try api.register(collection: UserController())
     }
 }

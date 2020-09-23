@@ -7,18 +7,18 @@
 
 import Fluent
 import Vapor
+import SMTP
 
 struct AuthController: RouteCollection {
 
     func boot(routes: RoutesBuilder) throws {
         routes.group("auth") { auth in
+            /// 注册
             auth.post("register", use: register)
+            /// 登录
             auth.post("login", use: login)
-
-            let authGroup = auth.grouped(AccessToken.authenticator(), User.guardMiddleware())
-
-            authGroup.post("user", "update", use: updateUser)
-
+            /// 更新 accesstoken
+            auth.post("accessToken", use: refreshAccessToken)
             
 //            auth.group("email", "verification") { emailVerificationRoutes in
 //                emailVerificationRoutes.post("", use: sendEmailVerification)
@@ -30,7 +30,7 @@ struct AuthController: RouteCollection {
 //                resetPasswordRoutes.get("verify", use: verifyResetPasswordToken)
 //            }
 //            auth.post("recover", use: recoverAccount)
-            auth.post("accessToken", use: refreshAccessToken)
+
 
         }
 
@@ -54,11 +54,15 @@ extension AuthController {
                 return try UserAuth(userId: user.requireID(), authType: .email, identifier: inputRegister.email, credential: pwd)
             }
             .flatMap { userAuth in
-                return userAuth.create(on: req.db).map { _ in OutputJson(success: OutputCreate())}
+                return userAuth
+                    .create(on: req.db)
+                    .map { _ in
+                        // 发送认证邮件
+                        let email = Email(from: EmailAddress(address: "13576051334@163.com"), to: [EmailAddress(address: inputRegister.email)], subject: "【Boke】注册认证", body: "欢迎你的使用")
+                        _ = req.smtp.send(email)
+                    }
+                    .map { _ in OutputJson(success: OutputCreate())}
             }
-
-            //TODO: send email need
-
     }
 
     private func login(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputLogin>> {
@@ -97,27 +101,6 @@ extension AuthController {
     }
 
 
-    private func updateUser(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputUser>> {
-        guard let user = req.auth.get(User.self) else {
-            throw ApiError(code: OutputStatus.userNotExist)
-        }
-
-        let inputUser = try req.content.decode(InputUser.self)
-
-        if let avatar = inputUser.avatar {
-            user.avatar = avatar
-        }
-
-        if let name = inputUser.name {
-            user.name = name
-        }
-
-        return req.repositoryUsers.update(user: user).map {user in
-            OutputJson(success: OutputUser(from: user))
-        }
-
-        
-    }
 
 //    private func sendEmailVerification(_ req: Request) throws -> EventLoopFuture<HTTPStatus>{}
 //    private func recoverAccount(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {}

@@ -11,6 +11,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/vapor.git", from: "4.8.0"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0-rc"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0-rc"),
+        .package(url: "https://github.com/vapor/queues-redis-driver.git", from: "1.0.0-rc.3"),
     ],
     targets: [
         .target(name: "SMTP", dependencies: [
@@ -20,6 +21,7 @@ let package = Package(
             .product(name: "Fluent", package: "fluent"),
             .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
             .product(name: "Vapor", package: "vapor"),
+            .product(name: "QueuesRedisDriver", package: "queues-redis-driver"),
             .target(name: "SMTP")
         ]),
         .target(name: "Run", dependencies: ["App"]),

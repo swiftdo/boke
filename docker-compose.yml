@@ -28,6 +28,7 @@ x-shared_environment: &shared_environment
   DATABASE_PASSWORD: vapor_password
   VIRTUAL_HOST: sb.loveli.site
   LETSENCRYPT_HOST: sb.loveli.site
+  REDIS_HOST: redis
   LETSENCRYPT_EMAIL: 1164258202@qq.com
 
 services:
@@ -37,6 +38,7 @@ services:
       <<: *shared_environment
     depends_on:
       - db
+      - redis
     ports:
       - "8080:8080"
     command:
@@ -81,6 +83,11 @@ services:
       POSTGRES_DB: vapor_database
     ports:
       - "15432:5432"
+
+  redis:
+    image: redis:5
+    ports:
+      - 6379:6379
 
   pgadmin:
     image: dpage/pgadmin4:latest
