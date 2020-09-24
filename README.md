@@ -36,6 +36,8 @@ $ docker-compose up -d migrate
 3. 开启 pgadmin 直接访问数据库
 
 ```yml
+# docker-compose.yml
+
 pgadmin:
   image: dpage/pgadmin4:latest
   volumes:
@@ -46,20 +48,16 @@ pgadmin:
   ports:
     - "15000:80"
 ```
-上面是从 docker-compose.yml 中 pgadmin 的服务的编排，这里 `PGADMIN_DEFAULT_EMAIL` 和  `PGADMIN_DEFAULT_PASSWORD` 你可以自行修改，
-当然，`15000` 端口也可以修改，假设你配置不做任何改变。
+
+上面是 pgadmin 服务的编排配置。
+`PGADMIN_DEFAULT_EMAIL` 和  `PGADMIN_DEFAULT_PASSWORD`  可以自行修改.
+当然，`15000` 端口也可以自定义。
+
+假设配置不做任何改变。
 
 ```sh
 $ docker-comose up -d pgadmin
 ```
 
 执行完成后，直接在浏览器中输入 `http://localhost:15000` 就可以进入 pgadmin 的登录页面。
-使用 `1164258202@qq.com` 和 `oldbirds` 进行登录即可。
-
-
-
-
-
-
-
-
+使用 `1164258202@qq.com` 和 `oldbirds` 进行登录。这样就可以愉快的操作 postgresql 数据库了。
