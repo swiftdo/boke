@@ -1,0 +1,3 @@
+[submodule "boke-flutter"]
+	path = boke-flutter
+	url = https://github.com/swiftdo/boke-flutter.git
