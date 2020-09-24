@@ -14,6 +14,8 @@ vapor4 博客项目
 
 ## 本地部署
 
+### 后台部署
+
 为了比较方便部署，隔离本机上一些工具的影响，采用 docker 进行部署。
 
 1. 运行应用：
@@ -61,3 +63,6 @@ $ docker-comose up -d pgadmin
 
 执行完成后，直接在浏览器中输入 `http://localhost:15000` 就可以进入 pgadmin 的登录页面。
 使用 `1164258202@qq.com` 和 `oldbirds` 进行登录。这样就可以愉快的操作 postgresql 数据库了。
+
+### 前端部署
+
