@@ -18,13 +18,23 @@ vapor4 博客项目
 
 ### 开启
 
-0. 下载代码到本地
+* 下载代码
 
 ```sh
 $ git clone https://github.com/swiftdo/boke.git --recursive
 ```
 
-1. 运行应用：
+* 编译镜像
+
+```sh
+$ docker-compose build
+```
+
+因为在编译镜像的时候，会容器内下载一些墙外资源，需要配置下代理，加快依赖的下载。
+
+如何配置，请查看[Docker 容器内无法使用宿主机的代理配置，咋办?](https://mp.weixin.qq.com/s/MrGkC9P3rP-5GnNzo8_XNQ)
+
+* 运行应用：
 
 ```sh
 $ docker-compose up -d app
@@ -33,7 +43,7 @@ $ docker-compose up -d app
 这样就把项目部署好了，但是数据库的迁移还未发生(如果你代码里没有直接调用迁移方法)，
 可在浏览器中输入 `http://localhost:8080`, -> 'It works!';
 
-2. 数据库迁移
+* 数据库迁移
 
 ```sh
 $ docker-compose up -d migrate
@@ -41,20 +51,15 @@ $ docker-compose up -d migrate
 
 进行数据库迁移，这样，数据库的改动才会生效。
 
-3. 开启前端
+* 开启前端
 
 ```sh
 $ docker-compose up -d web
 ```
 
-因为 flutter web 会执行编译，所以会下载一些墙外资源，需要配置下代理。
-
-如何配置，请查看[Docker 容器内无法使用宿主机的代理配置，咋办?](https://mp.weixin.qq.com/s/MrGkC9P3rP-5GnNzo8_XNQ)
-
 完成后，在浏览器中输入： `http://localhost:8090`，即可访问。
 
-
-4. 开启 pgadmin 直接访问数据库 (非必要步骤)
+* 开启 pgadmin 直接访问数据库 (非必要步骤)
 
 ```yml
 # docker-compose.yml
