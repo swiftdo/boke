@@ -14,9 +14,15 @@ vapor4 博客项目
 
 ## 本地部署
 
-### 后台部署
+为了便于部署，隔离本机上的应用环境，采用 `docker` 进行部署。
 
-为了比较方便部署，隔离本机上一些工具的影响，采用 docker 进行部署。
+### 开启
+
+0. 下载代码到本地
+
+```sh
+$ git clone https://github.com/swiftdo/boke.git --recursive
+```
 
 1. 运行应用：
 
@@ -33,9 +39,22 @@ $ docker-compose up -d app
 $ docker-compose up -d migrate
 ```
 
-进行数据库迁移，这样，数据库的改动才会生效
+进行数据库迁移，这样，数据库的改动才会生效。
 
-3. 开启 pgadmin 直接访问数据库
+3. 开启前端
+
+```sh
+$ docker-compose up -d web
+```
+
+因为 flutter web 会执行编译，所以会下载一些墙外资源，需要配置下代理。
+
+如何配置，请查看[Docker 容器内无法使用宿主机的代理配置，咋办?](https://mp.weixin.qq.com/s/MrGkC9P3rP-5GnNzo8_XNQ)
+
+完成后，在浏览器中输入： `http://localhost:8090`，即可访问。
+
+
+4. 开启 pgadmin 直接访问数据库 (非必要步骤)
 
 ```yml
 # docker-compose.yml
@@ -58,11 +77,31 @@ pgadmin:
 假设配置不做任何改变。
 
 ```sh
-$ docker-comose up -d pgadmin
+$ docker-compose up -d pgadmin
 ```
 
 执行完成后，直接在浏览器中输入 `http://localhost:15000` 就可以进入 pgadmin 的登录页面。
 使用 `1164258202@qq.com` 和 `oldbirds` 进行登录。这样就可以愉快的操作 postgresql 数据库了。
 
-### 前端部署
+### 关闭
+
+关闭的项目，提供 2 种方式：
+
+1. 如果仅仅是**关闭项目**，可以执行：
+
+```sh
+docker-compose down
+```
+
+2. 如果是**关闭项目且删除数据卷(数据库等)**，可以执行：
+
+```sh
+docker-compose down -v
+```
+
+
+
+
+
+
 
