@@ -95,6 +95,13 @@ services:
     ports:
       - 6379:6379
 
+  web:
+    image: boke-flutter:latest
+    build:
+      context: ./boke-flutter/
+    ports:
+      - "8090:80"
+
   pgadmin:
     image: dpage/pgadmin4:latest
     volumes:
