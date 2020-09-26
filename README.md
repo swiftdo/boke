@@ -20,13 +20,19 @@ vapor4 博客项目
 * 下载代码
 
   ```sh
-  $ git clone https://github.com/swiftdo/boke.git --recursive
+  git clone https://github.com/swiftdo/boke.git --recursive
+  ```
+
+  修改前端页面的请求 `baseurl`，打开文件 `boke-flutter/lib/config/config.dart`, 然后将 `requestBaseURL` 更改为:
+
+  ```dart
+  final String requestBaseURL = 'http://127.0.0.1:8080/api';
   ```
 
 * 编译镜像
 
-  ```sh 
-  $ docker-compose build
+  ```sh
+  docker-compose build
   ```
 
   因为在编译镜像的时候，会容器内下载一些墙外资源，需要配置下代理，加快依赖的下载。
@@ -36,7 +42,7 @@ vapor4 博客项目
 * 运行应用：
 
   ```sh
-  $ docker-compose up -d app
+  docker-compose up -d app
   ```
 
   这样就把项目部署好了，但是数据库的迁移还未发生(如果你代码里没有直接调用迁移方法)，
