@@ -1,20 +1,3 @@
-
-# Docker Compose file for Vapor
-#
-# Install Docker on your system to run and test
-# your Vapor app in a production-like environment.
-#
-# Note: This file is intended for testing and does not
-# implement best practices for a production deployment.
-#
-# Learn more: https://docs.docker.com/compose/reference/
-#
-#   Build images: docker-compose build
-#      Start app: docker-compose up app
-# Start database: docker-compose up db
-# Run migrations: docker-compose up migrate
-#       Stop all: docker-compose down (add -v to wipe db)
-#
 version: "3.7"
 
 volumes:
@@ -34,7 +17,7 @@ x-shared_environment: &shared_environment
 
 services:
   app:
-    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:1.1.6
+    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:latest
     environment:
       <<: *shared_environment
     depends_on:
@@ -54,7 +37,7 @@ services:
       ]
 
   migrate:
-    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:1.1.6
+    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:latest
     environment:
       <<: *shared_environment
     depends_on:
@@ -64,7 +47,7 @@ services:
       replicas: 0
 
   revert:
-    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:1.1.6
+    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/vapor:latest
     environment:
       <<: *shared_environment
     depends_on:
@@ -84,6 +67,17 @@ services:
       POSTGRES_DB: vapor_database
     ports:
       - "15432:5432"
+
+  web:
+    image: registry.cn-hangzhou.aliyuncs.com/oldbirds/boke:latest
+    build:
+      context: ./boke-flutter/
+    environment:
+      VIRTUAL_HOST: boke.loveli.site
+      LETSENCRYPT_HOST: boke.loveli.site
+      LETSENCRYPT_EMAIL: 1164258202@qq.com
+    ports:
+      - "8090:80"
 
   redis:
     image: redis:5
