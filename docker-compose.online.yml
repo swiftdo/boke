@@ -70,8 +70,6 @@ services:
 
   web:
     image: registry.cn-hangzhou.aliyuncs.com/oldbirds/boke:latest
-    build:
-      context: ./boke-flutter/
     environment:
       VIRTUAL_HOST: boke.loveli.site
       LETSENCRYPT_HOST: boke.loveli.site
