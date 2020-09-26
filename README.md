@@ -11,7 +11,6 @@ vapor4 博客项目
 
 ![func](http://blog.loveli.site/2020-09-06-boke.png)
 
-
 ## 本地部署
 
 为了便于部署，隔离本机上的应用环境，采用 `docker` 进行部署。
@@ -20,19 +19,19 @@ vapor4 博客项目
 
 * 下载代码
 
-```sh
-$ git clone https://github.com/swiftdo/boke.git --recursive
-```
+  ```sh
+  $ git clone https://github.com/swiftdo/boke.git --recursive
+  ```
 
 * 编译镜像
 
-```sh
-$ docker-compose build
-```
+  ```sh 
+  $ docker-compose build
+  ```
 
-因为在编译镜像的时候，会容器内下载一些墙外资源，需要配置下代理，加快依赖的下载。
+  因为在编译镜像的时候，会容器内下载一些墙外资源，需要配置下代理，加快依赖的下载。
 
-如何配置，请查看[Docker 容器内无法使用宿主机的代理配置，咋办?](https://mp.weixin.qq.com/s/MrGkC9P3rP-5GnNzo8_XNQ)
+  如何配置，请查看[Docker 容器内无法使用宿主机的代理配置，咋办?](https://mp.weixin.qq.com/s/MrGkC9P3rP-5GnNzo8_XNQ)
 
 * 运行应用：
 
@@ -40,24 +39,24 @@ $ docker-compose build
   $ docker-compose up -d app
   ```
 
-这样就把项目部署好了，但是数据库的迁移还未发生(如果你代码里没有直接调用迁移方法)，
-可在浏览器中输入 `http://localhost:8080`, -> 'It works!';
+  这样就把项目部署好了，但是数据库的迁移还未发生(如果你代码里没有直接调用迁移方法)，
+  可在浏览器中输入 `http://localhost:8080`, -> 'It works!';
 
 * 数据库迁移
 
   ```sh
-  $ docker-compose up -d migrate
+  docker-compose up -d migrate
   ```
 
-进行数据库迁移，这样，数据库的改动才会生效。
+  进行数据库迁移，这样，数据库的改动才会生效。
 
 * 开启前端
 
   ```sh
-  $ docker-compose up -d web
+  docker-compose up -d web
   ```
 
-完成后，在浏览器中输入： `http://localhost:8090`，即可访问。
+  完成后，在浏览器中输入： `http://localhost:8090`，即可访问。
 
 * 开启 pgadmin 直接访问数据库 (非必要步骤)
 
@@ -82,7 +81,7 @@ $ docker-compose build
   假设配置不做任何改变。
 
   ```sh
-  $ docker-compose up -d pgadmin
+  docker-compose up -d pgadmin
   ```
 
   执行完成后，直接在浏览器中输入 `http://localhost:15000` 就可以进入 pgadmin 的登录页面。
