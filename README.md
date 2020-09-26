@@ -109,7 +109,14 @@ vapor4 博客项目
    docker-compose down -v
    ```
    
-   ## 相关文章
+## 相关文章
    
-   * [git submodule](https://oldbird.run/tools/git/t2-git-submodule.html)
-   * [在 Docker 上部署一个 Flutter Web 应用](https://oldbird.run/flutter/t6-docker-web-deploy.html)
+* [git submodule](https://oldbird.run/tools/git/t2-git-submodule.html)
+* [在 Docker 上部署一个 Flutter Web 应用](https://oldbird.run/flutter/t6-docker-web-deploy.html)
+
+
+
+如果想关注更多技术，可以关注公众号：
+![](http://blog.loveli.site/2020-09-26-wechat.png)
+
+
