@@ -7,18 +7,13 @@ func routes(_ app: Application) throws {
         return "It works!"
     }
 
-    app.get("hello") { req -> String in
-
-        return "Hello, oldbirds! docker"
-    }
-
     let tokenAuthRoutes = app.grouped(AccessToken.authenticator(), User.guardMiddleware())
     tokenAuthRoutes.get("me") { req  in
         return try OutputJson(success: OutputUser(from:  req.auth.require(User.self)))
     }
 
     app.get("send-email") { req in
-        req.queue
+        return req.queue
             .dispatch(
                 EmailJob.self,
                 EmailContent.init(to: "1164258202@qq.com", message: "hello world", subject: "测试")

@@ -22,6 +22,5 @@ func migrations(_ app: Application) throws {
     app.migrations.add(BlogMigrationSeed())
 
 //    app.migrations.add(TopicAddURLSourceMigration())
-
 //    try app.autoMigrate().wait()
 }

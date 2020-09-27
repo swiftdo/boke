@@ -10,6 +10,7 @@ import Fluent
 
 protocol RepositoryUserAuth: Repository {
     func find(authType:UserAuth.AuthType, identifier: String) -> EventLoopFuture<UserAuth?>
+    func create(_ auth: UserAuth) -> EventLoopFuture<Void>
 }
 
 struct DatabaseRepositoryUserAuth: RepositoryUserAuth, DatabaseRepository {
@@ -20,6 +21,10 @@ struct DatabaseRepositoryUserAuth: RepositoryUserAuth, DatabaseRepository {
             .filter(\.$authType == authType)
             .filter(\.$identifier == identifier)
             .first()
+    }
+
+    func create(_ auth: UserAuth) -> EventLoopFuture<Void> {
+        return auth.create(on: database)
     }
 }
 
