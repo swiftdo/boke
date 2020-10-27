@@ -122,6 +122,6 @@ vapor4 博客项目
 
 
 如果想关注更多技术，可以关注公众号：
-![](http://blog.loveli.site/2020-09-26-wechat.png)
+![](http://blog.loveli.site/mweb/wechat-logo.png)
 
 
