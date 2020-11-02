@@ -120,6 +120,7 @@ vapor4 博客项目
 
 
 如果想关注更多技术，可以关注公众号：
-![](http://blog.loveli.site/mweb/wechat-logo.png)
+
+<img src="http://blog.loveli.site/mweb/wechat-logo.png" width="420" />
 
 
