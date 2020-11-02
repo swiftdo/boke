@@ -1,7 +1,5 @@
 ![logo](http://blog.loveli.site/2020-09-26-banner.png)
 
-## 11 月份开始继续迭代！！！
-
 ## boke
 
 vapor4 博客项目
