@@ -206,9 +206,4 @@ extension BookletController {
                 req.repositoryCatalogs.removeBy(menu: catalog)
             }.transform(to: OutputJson(success: "删除成功"))
     }
-
-
-
-
-
 }

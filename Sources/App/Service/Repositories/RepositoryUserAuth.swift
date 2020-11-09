@@ -11,6 +11,8 @@ import Fluent
 protocol RepositoryUserAuth: Repository {
     func find(authType:UserAuth.AuthType, identifier: String) -> EventLoopFuture<UserAuth?>
     func create(_ auth: UserAuth) -> EventLoopFuture<Void>
+    
+    func find(authType:UserAuth.AuthType, userId: UUID) -> EventLoopFuture<UserAuth?>
 }
 
 struct DatabaseRepositoryUserAuth: RepositoryUserAuth, DatabaseRepository {
@@ -25,6 +27,14 @@ struct DatabaseRepositoryUserAuth: RepositoryUserAuth, DatabaseRepository {
 
     func create(_ auth: UserAuth) -> EventLoopFuture<Void> {
         return auth.create(on: database)
+    }
+    
+    func find(authType:UserAuth.AuthType, userId: UUID) -> EventLoopFuture<UserAuth?> {
+        return UserAuth
+            .query(on: database)
+            .filter(\.$authType == authType)
+            .filter(\.$user.$id == userId)
+            .first()
     }
 }
 

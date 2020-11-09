@@ -21,23 +21,36 @@ struct AuthController: RouteCollection {
             auth.post("accessToken", use: refreshAccessToken)
             
             auth.group("email", "verification") { emailVerificationRoutes in
-//                emailVerificationRoutes.post("", use: sendEmailVerification)
+                /// 用户没有在注册的时候进行验证，需要提供个操作，点击发送邮箱
+                emailVerificationRoutes.post("send", use: sendEmailVerification)
+                
+                /// 邮箱验证
                 emailVerificationRoutes.get(":id", use: verifyEmail)
             }
-//
-//            auth.group("reset", "password") { resetPasswordRoutes in
-//                resetPasswordRoutes.post("", use: resetPassword)
-//                resetPasswordRoutes.get("verify", use: verifyResetPasswordToken)
-//            }
-//            auth.post("recover", use: recoverAccount)
 
-
+            auth.group("password") { resetPasswordRoutes in
+                resetPasswordRoutes.post("reset", use: resetPassword)
+//                resetPasswordRoutes.post("forget", use: forgetPassword)
+            }
         }
 
     }
 }
 
 extension AuthController {
+    
+    private func sendEamilVerifyToken(req: Request, userId: UUID, email: String) -> EventLoopFuture<EventLoopFuture<Void>> {
+        let token = SHA256.ob.hash(req.random.generate(bits: 256))
+        let emailToken = EmailToken(userID: userId, token: token)
+        return req.repositoryEmailTokens
+            .create(emailToken)
+            .flatMapThrowing { _ in
+                let url = try Config.urlPre + "auth/email/verification/\(emailToken.requireID())"
+                let content = EmailContent(to: email, message: "点击链接完成认证<a href=\"\(url)\">\(url)</a>", subject: "【BoKe】认证验证")
+                return req.queue.dispatch(EmailJob.self, content)
+            }
+    }
+    
     private func register(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputCreate>> {
         try InputRegister.validate(content: req)
         let inputRegister = try req.content.decode(InputRegister.self)
@@ -57,16 +70,7 @@ extension AuthController {
                 return req.repositoryUserAuths
                     .create(userAuth)
                     .flatMap { (_) -> EventLoopFuture<EventLoopFuture<Void>> in
-                        /// 生成认证 url:
-                        let token = SHA256.ob.hash(req.random.generate(bits: 256))
-                        let emailToken = EmailToken(userID: userId, token: token)
-                        return req.repositoryEmailTokens
-                            .create(emailToken)
-                            .flatMapThrowing { _ in
-                                let url = try Config.urlPre + "auth/email/verification/\(emailToken.requireID())"
-                                let content = EmailContent(to: inputRegister.email, message: "点击链接完成认证<a href=\"\(url)\">\(url)</a>", subject: "【BoKe】认证验证")
-                            return req.queue.dispatch(EmailJob.self, content)
-                        }
+                        return sendEamilVerifyToken(req: req, userId: userId, email: inputRegister.email)
                     }
                     .map { _ in OutputJson(success: OutputCreate())}
             }
@@ -109,17 +113,61 @@ extension AuthController {
 
 
 
-//    private func sendEmailVerification(_ req: Request) throws -> EventLoopFuture<HTTPStatus>{}
-//    private func recoverAccount(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {}
+    private func sendEmailVerification(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputCreate>>{
+        /// 获取用户 id
+        guard let id = req.parameters.get("id", as: String.self), let uuid = UUID(uuidString: id) else {
+            throw ApiError(code: OutputStatus.missParameters)
+        }
+        
+        return req.repositoryUsers
+            .find(id: uuid)
+            .unwrap(or: ApiError(code: OutputStatus.userNotExist))
+            .flatMap { (user) -> EventLoopFuture<EventLoopFuture<Void>> in
+                return sendEamilVerifyToken(req: req, userId: uuid, email: user.email)
+            }
+            .map { _ in OutputJson(success: OutputCreate())}
+    }
+    
     private func verifyEmail(_ req: Request) throws -> EventLoopFuture<OutputJson<String>> {
         guard let id = req.parameters.get("id", as: String.self), let uuid = UUID(uuidString: id) else {
             throw ApiError(code: OutputStatus.missParameters)
         }
-        return EmailToken.find(uuid, on: req.db).unwrap(or: ApiError(code: .emailTokenNotExist)).flatMap { token in
-            var result: OutputJson<String> = token.expiresAt > Date() ? OutputJson(success: "认证成功") :  OutputJson(error: .emailTokenFail)
+        return EmailToken.find(uuid, on: req.db)
+            .unwrap(or: ApiError(code: .emailTokenNotExist))
+            .flatMap { token in
+            let result: OutputJson<String> = token.expiresAt > Date() ? OutputJson(success: "认证成功") :  OutputJson(error: .emailTokenFail)
             return token.delete(on: req.db).map { _ in result}
         }
     }
-//    private func resetPassword(_ req: Request) throws -> EventLoopFuture<HTTPStatus>{}
-//    private func verifyResetPasswordToken(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {}
+    
+    /// 重置密码
+    private func resetPassword(_ req: Request) throws -> EventLoopFuture<OutputJson<String>>{
+        /// 重置密码，用户id, 新密码，旧密码
+        let inputResetPwd = try req.content.decode(InputResetPwd.self)
+        guard let uuid = UUID(inputResetPwd.id) else {
+            throw ApiError(code: OutputStatus.missParameters)
+        }
+        
+        return req.repositoryUserAuths
+            .find(authType: .email, userId: uuid)
+            .unwrap(or: ApiError(code: .userAuthNotExist))
+            .map { userAuth in
+                return req.password
+                    .async
+                    .verify(inputResetPwd.opwd, created: userAuth.credential)
+                    .guard({$0 == true}, else: ApiError(code: .invalidEmailOrPassword))
+                    .map { _ in
+                        userAuth.credential = inputResetPwd.pwd
+                        _ = userAuth.save(on: req.db)
+                    }
+            }.map { _ in return OutputJson(success: "更换成功")}
+    }
+    
+    /// 忘记密码
+//    private func forgetPassword(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+//        // 邮箱，新密码，再次输入密码，验证码
+//
+//
+//        
+//    }
 }

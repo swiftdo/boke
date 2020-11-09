@@ -64,7 +64,6 @@ extension Environment {
     static let dbPwd  = Self.get("DATABASE_PASSWORD")
     static let dbName = Self.get("DATABASE_NAME")
     static let dbURL  = Self.get("DATABASE_URL")
-
     static let redisHost = Self.get("REDIS_HOST")
 }
 
