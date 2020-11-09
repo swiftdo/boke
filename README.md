@@ -124,3 +124,11 @@ vapor4 博客项目
 <img src="http://blog.loveli.site/mweb/wechat-logo.png" width="420" />
 
 
+## 相关时序图
+
+为了比较好的理解业务流程，整理一些时序图供梳理
+
+### 认证
+![](http://blog.loveli.site/mweb/token%20%E8%AE%A4%E8%AF%81.png)
+
+
