@@ -21,6 +21,13 @@ func migrations(_ app: Application) throws {
     app.migrations.add(CreateBooklet())
     app.migrations.add(BlogMigrationSeed())
 
+    app.migrations.add(CreateRole())
+    app.migrations.add(CreatePermission())
+    app.migrations.add(CreateRolePermission())
+
+    app.migrations.add(RolePermissionSeed())
+    app.migrations.add(UserAddRoleId())
+
 //    app.migrations.add(TopicAddURLSourceMigration())
 //    try app.autoMigrate().wait()
 }
