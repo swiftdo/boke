@@ -21,6 +21,9 @@ final class User: Model, Content {
     @Timestamp(key: FieldKeys.updatedAt, on: .update) var updatedAt: Date?
     @Children(for: \.$user) var userAuths: [UserAuth]
     @Children(for: \.$author) var topics: [Topic]
+    
+    @Parent(key: FieldKeys.roleId) var role: Role
+
 
     init() { }
 
@@ -41,6 +44,7 @@ extension User {
         static var avatar: FieldKey { "avatar" }
         static var createdAt: FieldKey { "created_at" }
         static var updatedAt: FieldKey { "updated_at" }
+        static var roleId: FieldKey { "role_id" }
     }
 }
 

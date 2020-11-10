@@ -23,6 +23,7 @@ final class Topic: Model {
 
     @Parent(key: FieldKeys.subjectId) var subject: Subject
     @Parent(key: FieldKeys.authorId) var author: User
+    
     @Siblings(through: TopicTag.self, from: \.$topic, to: \.$tag) var tags: [Tag]
 
     @Enum(key: FieldKeys.contentType) var contentType: ContentType

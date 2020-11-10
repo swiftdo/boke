@@ -8,9 +8,6 @@
 import Fluent
 import Vapor
 
-import Fluent
-import Vapor
-
 /// 小册
 final class Booklet: Model {
 
