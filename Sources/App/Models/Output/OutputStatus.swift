@@ -41,4 +41,5 @@ extension OutputStatus {
     static var emailTokenNotExist = OutputStatus(code: 34, message: "emailtoken 不存在")
     static var emailTokenFail = OutputStatus(code: 35, message: "emailtoken 已失效")
     static var userAuthNotExist = OutputStatus(code: 36, message: "userAuth 不存在")
+    static var roleNotExist = OutputStatus(code: 37, message: "role 不存在")
 }

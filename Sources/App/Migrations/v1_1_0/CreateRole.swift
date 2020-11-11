@@ -12,6 +12,7 @@ struct CreateRole: Migration {
         return database.schema(Role.schema)
             .id()
             .field(Role.FieldKeys.name, .string, .required)
+            .unique(on: Role.FieldKeys.name)
             .create()
     }
 

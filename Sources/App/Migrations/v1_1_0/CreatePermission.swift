@@ -12,6 +12,7 @@ struct CreatePermission: Migration {
         return database.schema(Permission.schema)
             .id()
             .field(Permission.FieldKeys.name, .string, .required)
+            .unique(on: Permission.FieldKeys.name)
             .create()
     }
 
