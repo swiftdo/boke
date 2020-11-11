@@ -8,7 +8,7 @@
 import Foundation
 
 struct ETNameSpace {
-    enum Permission {
+    enum Permission : CaseIterable {
         case follow
         case collect
         case comment
@@ -26,9 +26,11 @@ struct ETNameSpace {
             case .administer: return "ADMINISTER"
             }
         }
+        
+    
     }
 
-    enum Role {
+    enum Role : CaseIterable {
         case locked
         case user
         case moderator
@@ -44,6 +46,15 @@ struct ETNameSpace {
                 return "Moderator"
             case .administrator:
                 return "Administrator"
+            }
+        }
+        
+        var permissions: [Permission] {
+            switch self {
+            case .locked: return [.follow, .collect]
+            case .user: return [.follow, .collect, .comment, .upload]
+            case .moderator: return [.follow, .collect, .comment, .upload, .moderate]
+            case .administrator: return ETNameSpace.Permission.allCases
             }
         }
     }
