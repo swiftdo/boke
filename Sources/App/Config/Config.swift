@@ -7,7 +7,29 @@
 
 import Vapor
 
-struct Config {
+struct MyConfig {
     /// 本地开发
-    static let urlPre = "https://sb.loveli.site/api/";
+    let urlPre = "https://sb.loveli.site/api/"
+    let adminEmail = "1164258202@qq.com"
+}
+
+struct MyConfigKey: StorageKey {
+    typealias Value = MyConfig
+}
+
+extension Application {
+    var myConfig: MyConfig? {
+        get {
+            self.storage[MyConfigKey.self]
+        }
+        set {
+            self.storage[MyConfigKey.self] = newValue
+        }
+    }
+}
+
+extension Request {
+    var myConfig: MyConfig {
+        return application.myConfig!
+    }
 }

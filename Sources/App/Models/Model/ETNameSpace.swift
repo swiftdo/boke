@@ -8,6 +8,7 @@
 import Foundation
 
 struct ETNameSpace {
+    
     enum Permission : CaseIterable {
         case follow
         case collect
@@ -26,8 +27,6 @@ struct ETNameSpace {
             case .administer: return "ADMINISTER"
             }
         }
-        
-    
     }
 
     enum Role : CaseIterable {

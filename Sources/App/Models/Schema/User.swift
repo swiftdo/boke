@@ -21,9 +21,7 @@ final class User: Model, Content {
     @Timestamp(key: FieldKeys.updatedAt, on: .update) var updatedAt: Date?
     @Children(for: \.$user) var userAuths: [UserAuth]
     @Children(for: \.$author) var topics: [Topic]
-    
-    @Parent(key: FieldKeys.roleId) var role: Role
-
+    @OptionalParent(key: FieldKeys.roleId) var role: Role?
 
     init() { }
 

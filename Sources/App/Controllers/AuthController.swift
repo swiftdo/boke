@@ -45,7 +45,7 @@ extension AuthController {
         return req.repositoryEmailTokens
             .create(emailToken)
             .flatMapThrowing { _ in
-                let url = try Config.urlPre + "auth/email/verification/\(emailToken.requireID())"
+                let url = try req.myConfig.urlPre + "auth/email/verification/\(emailToken.requireID())"
                 let content = EmailContent(to: email, message: "点击链接完成认证<a href=\"\(url)\">\(url)</a>", subject: "【BoKe】认证验证")
                 return req.queue.dispatch(EmailJob.self, content)
             }
@@ -54,13 +54,31 @@ extension AuthController {
     private func register(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputCreate>> {
         try InputRegister.validate(content: req)
         let inputRegister = try req.content.decode(InputRegister.self)
-
+        
         return req.repositoryUserAuths
             .find(authType: .email, identifier: inputRegister.email)
             .guard({ $0 == nil }, else: ApiError(code: .userExist))
             .transform(to: User(name: inputRegister.name, email: inputRegister.email))
             .flatMap { user in
                 return req.repositoryUsers.create(user).map { user }
+            }
+            .flatMap { user -> EventLoopFuture<User> in
+                if user.$role.id == nil {
+                    var roleType = ETNameSpace.Role.user
+                    if (user.email == req.myConfig.adminEmail) {
+                        roleType = ETNameSpace.Role.administrator
+                    }
+                    return Role
+                        .query(on: req.db)
+                        .filter(\.$name == roleType.string)
+                        .first()
+                        .unwrap(or: ApiError(code: .roleNotExist))
+                        .flatMap { role in
+                            user.$role.id = role.id
+                            return user.update(on: req.db)
+                        }.map { user }
+                }
+                return req.eventLoop.makeSucceededFuture(user)
             }
             .and(req.password.async.hash(inputRegister.password))
             .flatMapThrowing { user, pwd in

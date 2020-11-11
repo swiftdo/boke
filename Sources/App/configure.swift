@@ -17,6 +17,10 @@ public func configure(_ app: Application) throws {
     app.middleware = .init()
     app.middleware.use(cors)
     app.middleware.use(error)
+    
+    /// 初始化环境
+    app.myConfig = .init()
+    
 
     /// 初始化数据库
     if let dbURL = Environment.dbURL {

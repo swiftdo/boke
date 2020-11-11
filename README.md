@@ -281,6 +281,206 @@ final class Role: Model {
 
 在此之前，我们需要把程序中的角色和权限的对应关系保存起来。
 
+```swift
+struct ETNameSpace {
+    
+    enum Permission : CaseIterable {
+        case follow
+        case collect
+        case comment
+        case upload
+        case moderate
+        case administer
+
+        var string: String {
+            switch self {
+            case .follow: return "FOLLOW"
+            case .collect: return "COLLECT"
+            case .comment: return "COMMENT"
+            case .upload: return "UPLOAD"
+            case .moderate: return "MODERATE"
+            case .administer: return "ADMINISTER"
+            }
+        }
+    }
+
+    enum Role : CaseIterable {
+        case locked
+        case user
+        case moderator
+        case administrator
+
+        var string: String {
+            switch self {
+            case .locked:
+                return "Locked"
+            case .user:
+                return "User"
+            case .moderator:
+                return "Moderator"
+            case .administrator:
+                return "Administrator"
+            }
+        }
+        
+        var permissions: [Permission] {
+            switch self {
+            case .locked: return [.follow, .collect]
+            case .user: return [.follow, .collect, .comment, .upload]
+            case .moderator: return [.follow, .collect, .comment, .upload, .moderate]
+            case .administrator: return ETNameSpace.Permission.allCases
+            }
+        }
+    }
+}
+```
+然后创建迁移：
+
+```swift
+struct RolePermissionSeed: Migration {
+
+    func prepare(on database: Database) -> EventLoopFuture<Void> {
+        
+        let allPers: [ETNameSpace.Permission] = ETNameSpace.Permission.allCases
+        let allRols: [ETNameSpace.Role] = ETNameSpace.Role.allCases
+        
+        let createPermissionFuture = allPers
+            .compactMap { permission in
+                return Permission(name: permission.string).save(on: database)
+            }
+            .flatten(on: database.eventLoop)
+            
+        return createPermissionFuture
+            .flatMap { _ -> EventLoopFuture<Void> in
+             return allRols
+                .compactMap { erole in
+                    let role = Role(name: erole.string)
+                    return role
+                        .save(on: database)
+                        .flatMap { _ -> EventLoopFuture<Void> in
+                            return erole
+                                .permissions
+                                .compactMap { epermission in
+                                return Permission
+                                    .query(on: database)
+                                    .filter(\.$name == epermission.string)
+                                    .first()
+                                    .unwrap(or: ApiError(code: .permissionNotExist))
+                                    .flatMap { permission in
+                                        return permission.$roles.attach(role, on: database)
+                                    }
+                            }.flatten(on: database.eventLoop)
+                        }
+                }.flatten(on: database.eventLoop)
+            }
+
+    }
+
+    func revert(on database: Database) -> EventLoopFuture<Void> {
+        database.eventLoop.flatten([
+            Role.query(on: database).delete(),
+            Permission.query(on: database).delete(),
+        ])
+    }
+}
+```
+
+```swift
+....
+app.migrations.add(CreateRole())
+app.migrations.add(CreatePermission())
+app.migrations.add(CreateRolePermission())
+app.migrations.add(RolePermissionSeed())
+app.migrations.add(UserAddRoleId())
+```
+执行迁移：
+
+```sh
+$ vapor run migrate
+```
+
+我们需要让用户在注册时就获得角色，也就是与对应的角色建立关系，所以在注册的方法里：
+
+```swift
+private func register(_ req: Request) throws -> EventLoopFuture<OutputJson<OutputCreate>> {
+        ...
+        .flatMap { user in
+            return req.repositoryUsers.create(user).map { user }
+        }
+        .flatMap { user -> EventLoopFuture<User> in
+            if user.$role.id == nil {
+                var roleType = ETNameSpace.Role.user
+                if (user.email == req.myConfig.adminEmail) {
+                    roleType = ETNameSpace.Role.administrator
+                }
+                return Role
+                    .query(on: req.db)
+                    .filter(\.$name == roleType.string)
+                    .first()
+                    .unwrap(or: ApiError(code: .roleNotExist))
+                    .flatMap { role in
+                        user.$role.id = role.id
+                        return user.update(on: req.db)
+                    }.map { user }
+            }
+            return req.eventLoop.makeSucceededFuture(user)
+        }
+        .and(req.password.async.hash(inputRegister.password))
+        ....
+```
+
+除了管理员以外，其他用户初始角色都是 "User", 那么我们如何从所有用户中识别出管理员呢？显然，我们可以通过 Email 地址来判断。
+每一个用户都拥有独一无二的 Email 地址，因此，我们可以通过判断用户的 Email 地址是否和配置变量 `adminEmail` 设置的值相吻合来识别管理员，
+进而对用户设置不同的角色----通过关系属性 User.role 与对应的 Role 记录建立关系。
+
+
+### 验证用户权限
+
+判断某个用户是否拥有某项权限，实际上就是判断该用户在数据库中对应的角色记录关联的权限记录中是否包含该项权限。我们可以获取某个用户角色记录和对应的权限记录列表:
+
+```swift
+
+func permissions(id: UUID?) -> EventLoopFuture<[Permission]> {
+    return User
+        .find(id, on: database)
+        .unwrap(or: ApiError(code: .userNotExist))
+        .flatMap { user in
+            user.$role.get(on: database).unwrap(or: ApiError(code: .roleNotExist))
+        }
+        .flatMap { (role: Role) in
+            role.$permissons.get(on: database)
+        }
+}
+```
+验证权限的过程也简单，假设我们现在要在验证该用户是否有上传的权限，首先应获取权限对象。
+
+```swift
+
+func can(id: UUID?, permission: ETNameSpace.Permission) throws -> EventLoopFuture<Bool> {
+    let permissionId = Permission
+        .query(on: database)
+        .filter(\.$name == permission.string)
+        .first()
+        .unwrap(or: ApiError(code: .permissionNotExist))
+        .flatMapThrowing { try $0.requireID() }
+        
+    return User
+        .find(id, on: database)
+        .unwrap(or: ApiError(code: .userNotExist))
+        .flatMap { user in
+            user.$role.get(on: database).unwrap(or: ApiError(code: .roleNotExist))
+        }
+        .and(permissionId)
+        .flatMap { (role: Role, perId: UUID) in
+            role.$permissons.query(on: database).filter(\.$id == perId).count().map{ $0 > 0 }
+        }
+}
+```
+因为验证管理员权限是个常用功能，出了 can() 方法之外，我们还实现了一个 isAdmin 属性
+
+
+
+
 
 
 
