@@ -476,7 +476,76 @@ func can(id: UUID?, permission: ETNameSpace.Permission) throws -> EventLoopFutur
         }
 }
 ```
-因为验证管理员权限是个常用功能，出了 can() 方法之外，我们还实现了一个 isAdmin 属性
+
+在路由中，我们希望接口只允许符合某个权限才允许访问，那么我们可以创建个中间件 PermissionMiddleware:
+
+```swift
+import Vapor
+import Fluent
+
+protocol PermissionFilterable: Model, Authenticatable {
+    static var roleKey: KeyPath<Self, OptionalParent<Role>> { get }
+}
+
+extension PermissionFilterable {
+    
+    public static func permissionMiddleware(
+        _ permission: ETNameSpace.Permission
+    ) -> Middleware {
+        PermissionFilterMiddleware<Self>(permission: permission)
+    }
+    
+    var _$role: OptionalParent<Role> {
+        self[keyPath: Self.roleKey]
+    }
+}
+
+
+private struct PermissionFilterMiddleware<A>: Middleware
+    where A: PermissionFilterable
+{
+    public let permission: ETNameSpace.Permission
+    
+    func respond(to req: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
+        guard let user = req.auth.get(A.self) else {
+            return req.eventLoop.makeFailedFuture(Abort(.unauthorized, reason: "\(Self.self) not authenticated."))
+        }
+        
+        let permissionId = Permission
+            .query(on: req.db)
+            .filter(\.$name == permission.string)
+            .first()
+            .unwrap(or: ApiError(code: .permissionNotExist))
+            .flatMapThrowing { try $0.requireID() }
+        
+        return user._$role.get(on: req.db)
+            .unwrap(or: ApiError(code: .roleNotExist))
+            .and(permissionId)
+            .flatMap { (role: Role, perId: UUID) in
+                role.$permissons.query(on: req.db).filter(\.$id == perId).count()
+            }
+            .guard({ $0 > 0 }, else: ApiError(code: .permissionInsufficient))
+            .flatMap { _ in
+                next.respond(to: req)
+            }
+    }
+}
+```
+
+然后在使用的地方加入这个中间件即可：
+
+```swift
+func boot(routes: RoutesBuilder) throws {
+    routes.group("app") { appGroup in
+        let authGroup = appGroup.grouped(AccessToken.authenticator(), User.guardMiddleware())
+        
+        let adminGroup = authGroup.grouped(User.permissionMiddleware(.administer))
+        adminGroup.get("hello") { req in
+            return "admin say hello"
+        }
+    }
+}
+```
 
 
 
