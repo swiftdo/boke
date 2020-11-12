@@ -47,3 +47,7 @@ extension User {
 }
 
 extension User: Authenticatable {}
+
+extension User: PermissionFilterable {
+    static var roleKey: KeyPath<User, OptionalParent<Role>> = \.$role
+}

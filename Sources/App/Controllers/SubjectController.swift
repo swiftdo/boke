@@ -12,6 +12,7 @@ struct SubjectController: RouteCollection {
 
     func boot(routes: RoutesBuilder) throws {
         routes.group("subject") { subject in
+            // authenticator: 进行auth.login(), guardMiddleware: 判断 auth.get()
             let authGroup = subject.grouped(AccessToken.authenticator(), User.guardMiddleware())
             authGroup.post("add", use: add)
             authGroup.post("delete", ":id", use: delete)

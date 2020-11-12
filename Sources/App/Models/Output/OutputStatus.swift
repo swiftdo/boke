@@ -43,4 +43,5 @@ extension OutputStatus {
     static var userAuthNotExist = OutputStatus(code: 36, message: "userAuth 不存在")
     static var roleNotExist = OutputStatus(code: 37, message: "role 不存在")
     static var permissionNotExist = OutputStatus(code: 38, message: "permission 不存在")
+    static var permissionInsufficient = OutputStatus(code: 39, message: "您没有访问权限")
 }

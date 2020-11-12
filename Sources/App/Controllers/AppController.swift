@@ -13,8 +13,12 @@ struct AppController: RouteCollection {
             appGroup.get("learn", use: getLearnUI)
             let authGroup = appGroup.grouped(AccessToken.authenticator(), User.guardMiddleware())
             authGroup.get("qiniu", use: getQiNiuToken)
+            
+            let adminGroup = authGroup.grouped(User.permissionMiddleware(.administer))
+            adminGroup.get("hello") { req in
+                return "admin say hello"
+            }
         }
-
     }
 }
 
